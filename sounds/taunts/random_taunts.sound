@@ -1,0 +1,16 @@
+{
+  "UI": false,
+  "Volume": "1.00,1.00,0",
+  "Pitch": "1.00,1.00,0",
+  "Decibels": 100,
+  "SelectionMode": "RandomExclusive",
+  "Sounds": [
+    "sounds/taunts/error_taunt.vsnd",
+    "sounds/taunts/perfect-fart.vsnd",
+    "sounds/taunts/rehehehe.vsnd",
+    "sounds/taunts/bone-crack.vsnd",
+    "sounds/taunts/anime-wow-sound-effect.vsnd"
+  ],
+  "MaximumDistance": 2301.2522,
+  "MinimumDistance": 115.062614
+}
