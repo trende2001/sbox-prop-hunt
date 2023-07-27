@@ -1,0 +1,33 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct; 
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+
+@inherits Panel;
+
+<style>
+	.root {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		flex-direction: column;
+		gap: 8px;
+		padding-bottom: 0px;
+	}
+</style>
+
+<root class="root">
+	@*@ChildContent*@
+	<PopupPanel></PopupPanel>
+</root>
+
+@code {
+	public static PopupList Current { get; internal set; }
+
+	public PopupList()
+	{
+		Current = this;
+	}
+}

@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using Sandbox.UI;
+
 namespace MyGame;
 
 public class HUDRootPanel : RootPanel
@@ -20,5 +21,6 @@ public class HUDRootPanel : RootPanel
 		AddChild<Health>();
 		AddChild<Timer>();
 		AddChild<AmmoUI>();
+		AddChild<PopupList>();
 	}
 }
