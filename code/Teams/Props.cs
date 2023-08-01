@@ -6,7 +6,7 @@ public class Props : BaseTeam
 {
 	public override string TeamName { get; } = "Props";
 	public override Color TeamColor { get; } = Color.FromBytes( 51, 153, 255 );
-	
+
 	public override void AddPlayer( Player player )
 	{
 		base.AddPlayer( player );

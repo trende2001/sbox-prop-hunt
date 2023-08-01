@@ -9,6 +9,12 @@ public abstract class BaseTeam
 {
 	public abstract string TeamName { get; }
 	public abstract Color TeamColor { get; }
+
+	public virtual float TeamPlayerPercentage { get; } = 0;
+	
+	public virtual int TeamPlayerMinimum { get; } = 0;
+	
+	public virtual int TeamPlayerMaximum { get; } = 65565;
 	public IList<Player> Players { get; } = new List<Player>();
 
 	public IEnumerable<Player> AlivePlayers
@@ -32,6 +38,15 @@ public abstract class BaseTeam
 		Teams.RegisteredTeams.Add( this );
 	}
 	
+	public virtual void DoGameruleTick()
+	{
+		if ( !PropHuntGame.PreventWin && ShouldWin() )
+		{
+			PropHuntGame.Current.OnTeamWin( this );
+			return;
+		}
+	}
+	
 	public virtual void AddPlayer( Player player )
 	{
 		Players.Add( player );
@@ -50,6 +65,16 @@ public abstract class BaseTeam
 		}
 
 		Players.Clear();
+	}
+
+	public virtual bool ShouldWin()
+	{
+		if ( Teams.GetByName( "Props" ).Players.Where( i => i.LifeState == LifeState.Alive && i.IsValid ).Count() > 0)
+		{
+			return false;
+		}
+
+		return true;
 	}
 	
 	/// <summary>

@@ -5,6 +5,8 @@
 @using System.Collections.Generic;
 @using System.Linq;
 
+@inherits Panel;
+@namespace MyGame
 
 <style>
 	.popup {
@@ -18,6 +20,15 @@
 		
 		border-left-width: 6px;
 		border-left: yellow;
+		
+		transition: all 0.5s;
+		
+		&:intro {
+			left: -1000px;
+		}
+		&:outro {
+			left: -1000px;
+		}
 	}
 	
 	.title {
@@ -35,15 +46,31 @@
 </style>
 
 <root class="popup">
-	<div class="title">The seekers will be unblinded in 15 seconds</div>
-	<div class="text">Hide or die</div>
+	@if (Title != string.Empty)
+	{
+		<div class="title">@Title</div>
+		<div class="text">@Text</div>
+	}
 </root>
-
 @code {
 	public string Title;
 	public string Text;
 	public Color TitleColor;
+	public float Duration = 8f;
+	
 	public TimeSince TimeSincePanelCreated = 0f;
-	
-	
+
+	public override void Tick()
+	{
+		base.Tick();
+		if (TimeSincePanelCreated > Duration)
+		{
+			Delete();
+		}
+	}
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine(Title, Text);
+	}
 }

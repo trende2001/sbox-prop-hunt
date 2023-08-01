@@ -15,10 +15,7 @@ namespace MyGame;
 public partial class PropHuntGame : GameManager
 {
 	public static PropHuntGame Current { get; set; }
-	
-	[Net] public RoundState RoundState { get; set; } = RoundState.None;
-	[Net] public int RoundLength { get; set; } = 0;
-	
+
 	public PropHuntGame()
 	{
 		if ( Game.IsServer )
@@ -39,7 +36,10 @@ public partial class PropHuntGame : GameManager
 		// Create a player for this client to play with
 		var pawn = new Player();
 		client.Pawn = pawn;
-		pawn.UpdateClothes( client );
-		pawn.Clothing.DressEntity( pawn );
+		if ( pawn.LifeState == LifeState.Alive && PropHuntGame.Current.RoundState < RoundState.Started && pawn.Team is not Spectator )
+		{
+			pawn.UpdateClothes( client );
+			pawn.Clothing.DressEntity( pawn );
+		}
 	}
 }
