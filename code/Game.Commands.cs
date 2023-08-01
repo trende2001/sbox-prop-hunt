@@ -84,6 +84,8 @@ public partial class PropHuntGame
 
 		// Reset the map, this will respawn all map entities
 		Game.ResetMap( Entity.All.Where( x => x is Player ).ToArray() );
+		
+		PropHuntGame.Current.Delete();
 
 		// Create a brand new game
 		PropHuntGame.Current = new PropHuntGame();
@@ -97,6 +99,37 @@ public partial class PropHuntGame
 			PropHuntGame.Current.ClientJoined( cl );
 		}
 	}
+	public static void CleanupRound()
+	{
+		foreach ( IClient cl in Game.Clients )
+		{
+			PropHuntGame.Current.ClientDisconnect( cl, NetworkDisconnectionReason.SERVER_SHUTDOWN );
+		}
+
+		Entity[] KeepEntities = { HUDEntity.Current, Current };
+		
+		CleanupClientEntities(To.Everyone);
+		
+		Game.ResetMap( KeepEntities );
+
+		Current.RoundState = RoundState.None;
+		Current.TimeSinceRoundStateChanged = 0;
+		
+		HUDEntity.Current.Delete();
+		_ = new HUDEntity();
+
+		foreach ( IClient cl in Game.Clients )
+		{
+			PropHuntGame.Current.ClientJoined( cl );
+		}
+	}
+
+	[ConCmd.Admin( "reset_round" )]
+	public static void ResetRound()
+	{
+		CleanupRound();
+	}
+	
 	[ClientRpc]
 	public static void CleanupClientEntities()
 	{
@@ -106,4 +139,10 @@ public partial class PropHuntGame
 				ent.Delete();
 		}
 	}
+
+	/*[ConCmd.Server( "create_popup" )]
+	public static void CreatePopup(string text, string title, float duration)
+	{
+		PopupSystem.DisplayPopup( To.Everyone, text, title, duration );
+	}*/
 }
