@@ -19,7 +19,8 @@ public class HUDRootPanel : RootPanel
 
 		AddChild<Crosshair>();
 		AddChild<Health>();
-		AddChild<Timer>();
+		AddChild<TimerUI>();
+		AddChild<HudHints>();
 		AddChild<AmmoUI>();
 		AddChild<PopupList>();
 	}

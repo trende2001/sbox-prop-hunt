@@ -3,6 +3,8 @@
 @using Sandbox.UI.Construct; 
 @using System;
 @namespace MyGame
+@inherits Panel
+
 <style>
 	.health {
 		position:absolute;
@@ -24,7 +26,7 @@
 	@if (Game.LocalPawn.LifeState == LifeState.Alive)
 	{
 		<div class="seg">
-			<img src="ui/icon/health-icon.png" style="width: 60px; height: 60px; margin: 33px;">
+			<img src="ui/icon/health-icon.png" style="width: 60px; height: 60px; margin: 33px"/>
 			@Math.Round(Game.LocalPawn.Health)
 		</div>
 	}
@@ -35,4 +37,4 @@
 	{ 
 		return HashCode.Combine(Math.Round(Game.LocalPawn.Health), Game.LocalPawn.LifeState);
 	}
-}s
+}

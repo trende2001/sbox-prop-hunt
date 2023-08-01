@@ -1,0 +1,110 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct; 
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@namespace MyGame
+
+@inherits Panel
+<style>
+		.root {
+			position: absolute;
+			width: 100%;
+			justify-content: center;
+			pointer-events: none;
+		}
+	
+		.timer {
+			bottom: -20px; 
+    		flex-direction:column; 
+    		//border-radius: 12px;
+    		border-top-left-radius: 0px;
+    		border-top-right-radius: 0px;
+    
+    		overflow: hidden;
+    		font-family: Poppins-SemiBold;
+    		color: white;
+    		font-size: 30px;
+		}
+	
+		.time {
+    		justify-content: center;
+    		align-items: center;
+    	}
+    	.segtop {
+    		justify-content: center;
+    		background-color: rgba(32,32,32,0.7);
+    		min-width: 310px;
+    		font-size: 24px;
+    		color: white;
+    		padding: 4px; 
+    		flex-grow: 1;
+    		text-stroke: 4px rgba(64,64,64,0.7);
+    	}
+</style>
+
+<root class="root">  
+	<div class="timer" @ref=TimePanel>
+		@if (PropHuntGame.Current is PropHuntGame game && game.RoundState != RoundState.Voting)
+		{
+			@if (game.RoundState == RoundState.WaitingForPlayers)
+			{
+				<div class="segtop">Waiting for players</div>
+				<div class="time">
+					@Format(TimeSpan.FromSeconds(game.TimeSinceRoundStateChanged.Relative.CeilToInt()))
+				</div>
+			}
+			else
+			{
+				if (game.RoundState == RoundState.Starting)
+				{
+					<div class="segtop">Preparing...</div>
+				}
+				else if (game.RoundState == RoundState.Started)
+				{
+					<div class="segtop">Ongoing Round</div>
+				}
+				else if (game.RoundState == RoundState.Ending)
+				{
+					@if (PropHuntGame.Current.WinningTeamName != null)
+					{
+						<div class="segtop" style="text-transform: uppercase">@($"{PropHuntGame.Current.WinningTeamName} win!")</div>
+					}
+				}
+				
+				<div class="time">
+					@if (PropHuntGame.Current.RoundState == RoundState.Started &&
+					     Game.LocalPawn is Player ply && (ply.Team != null || ply.LifeState == LifeState.Dead) &&
+					     (SinceLastStatusChange.Relative.CeilToInt() % 10 > 5))
+					{
+						@Format(TimeSpan.FromSeconds(game.TimeSinceRoundStateChanged.Relative.CeilToInt()))
+					}
+					</div>
+			}
+		}
+	</div>
+</root> 
+
+@code {
+	public Panel TimePanel { get; set; }
+	
+	public TimeSince SinceLastStatusChange { get; set; } = 0;
+
+
+	protected override int BuildHash()
+	{
+		if (PropHuntGame.Current is PropHuntGame game)
+		{
+			return HashCode.Combine(game.TimeSinceRoundStateChanged.Relative.CeilToInt(), game.RoundLength, game.RoundState);
+		}
+
+		return HashCode.Combine(1);
+	}
+	
+	public static string Format(TimeSpan timespan)
+	{
+		var format = timespan.Hours >= 1 ? @"h\:mm\:ss" : @"m\:ss";
+		return timespan.ToString(format);
+	}
+}

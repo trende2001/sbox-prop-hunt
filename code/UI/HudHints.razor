@@ -1,0 +1,120 @@
+﻿@using Sandbox;
+@using Sandbox.Component;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct; 
+@using System;
+@namespace MyGame
+
+@inherits Panel
+
+<style>
+	hudhints {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    
+        label {
+            color: white;
+            font-family: Poppins;
+            font-size: 40px;
+            top: 2px;
+            left: 2px;
+            font-weight: 600;
+        }
+    
+        InputHint {
+            margin-left: 4px;
+            margin-right: 4px;
+        }
+    
+        .pickup {
+            position: absolute;
+            height: 16px;
+            opacity: 0;
+            transition: all 0.1s ease;
+            transform: translateX(-50%);
+    
+            &.show {
+                opacity: 1;
+            }
+    
+            left: 50%;
+            bottom: 16%;
+    
+            .name {
+                margin-left: 4px;
+            }
+        }
+    }
+</style>
+
+<root>
+	<div class="pickup" @ref="PickupHint">
+		@*
+		<div>E</div>
+		*@
+		<label class="name" @ref="PickupLabel"/>
+	</div>
+</root>
+
+@code {
+	public Panel PickupHint { get; set; }
+	public Label PickupLabel { get; set; }
+
+    private Entity lastObserved;
+    protected Entity LastObserved
+    {
+        get => lastObserved;
+        set
+        {
+            if ( lastObserved != value && lastObserved.IsValid() )
+            {
+                var glow = lastObserved.Components.Get<Glow>();
+                if ( glow != null )
+                    glow.Enabled = false;
+            }
+
+            lastObserved = value;
+
+            if ( lastObserved.IsValid() )
+            {
+                var glow = lastObserved.Components.GetOrCreate<Glow>();
+                glow.Enabled = true;
+                glow.Width = 0.25f;
+                glow.Color = Color.FromBytes( 255, 207, 38, 125 );
+                glow.ObscuredColor = Color.FromBytes( 255, 207, 38, 5 );
+                glow.InsideObscuredColor = Color.FromBytes( 255, 207, 38, 2 );
+            }
+        }
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( Time.Now );
+    }
+
+    public override void Tick()
+    {
+        var player = Game.LocalPawn as Player;
+	    
+
+		var tr = Trace.Ray( Camera.Position, Camera.Position + Camera.Rotation.Forward * 100000f )
+			.WithAnyTags( "solid", "weapon" )
+			.Run();
+
+
+	    var isUsable = (tr.Hit && tr.Entity is IUse use && use.IsUsable(player) && tr.Distance < 128f || tr.Entity is Prop && player?.Team is Props && tr.Distance < 115f);
+
+		LastObserved = isUsable ? tr.Entity : null;
+		PickupHint.SetClass( "show", isUsable );
+	    
+		if ( isUsable )
+		{
+			if ( tr.Entity.IsValid() && tr.Entity is Weapon wpn )
+				PickupLabel.Text = wpn.Name;
+			else
+				PickupLabel.Text = "Use";
+		}
+	}
+
+}
