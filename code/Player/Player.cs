@@ -31,6 +31,12 @@ partial class Player : AnimatedEntity
 	}
 	[Net] public string TeamName { get; set; }
 	[Net] public Color TeamColour { get; set; }
+	
+	public bool IsSpectator
+	{
+		get => Client.GetValue<bool>( "spectator", false ) || (PropHuntGame.Current.RoundState == RoundState.Started && TeamName == "Spectator");
+		set => Client.SetValue( "spectator", value );
+	}
 
 	private float MaxHealth = 100f;
 	
@@ -47,6 +53,9 @@ partial class Player : AnimatedEntity
 		Health = 100;
 
 		SetModel( "models/citizen/citizen.vmdl" );
+		
+		PopupSystem.DisplayPopup( To.Everyone, "Hide or die", "The seekers will be unblinded in 15 seconds", 15f );
+
 		Components.Add( new WalkController() );
 		Components.Add( new FirstPersonCamera() );
 		Components.Add( new AmmoStorageComponent() );
@@ -57,6 +66,7 @@ partial class Player : AnimatedEntity
 		Ammo.ClearAmmo();
 		CreateHull();
 		Tags.Add( "player" );
+		Tags.Remove( "prop" );
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
@@ -78,6 +88,8 @@ partial class Player : AnimatedEntity
 	{
 		Event.Run( "Player.PreRespawn", this );
 		Spawn();
+		RemoveViewmodelRPC(To.Single( this ));
+		Tags.Remove( "prop" );
 		Event.Run( "Player.PostRespawn", this );
 	}
 
@@ -161,8 +173,7 @@ partial class Player : AnimatedEntity
 	/// </summary>
 	public virtual void CreateHull()
 	{
-		SetupPhysicsFromCapsule( PhysicsMotionType.Keyframed,
-			new Capsule( new Vector3( 0, 0, 16 ), new Vector3( 0, 0, 72 - 16 ), 32 ) );
+		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, Hull.Mins, Hull.Maxs );
 
 		//	phys.GetBody(0).RemoveShadowController();
 
@@ -195,6 +206,7 @@ partial class Player : AnimatedEntity
 		Event.Run( "Player.PreOnKilled", this );
 		LifeState = LifeState.Dead;
 		BecomeRagdoll( LastDamage );
+		RemoveViewmodelRPC(To.Single( this ));
 
 		Inventory.ActiveChild = null;
 		Inventory.ActiveChildInput = null;
@@ -211,6 +223,15 @@ partial class Player : AnimatedEntity
 			Components.Add( new NoclipController() );
 		}
 		Event.Run( "Player.PostOnKilled", this );
+	}
+
+	[ClientRpc]
+	private void RemoveViewmodelRPC()
+	{
+		foreach ( var viewmodel in BaseViewModel.AllViewModels.ToList() )
+		{
+			viewmodel.Delete();
+		}
 	}
 
 	//---------------------------------------------// 
@@ -255,10 +276,8 @@ partial class Player : AnimatedEntity
 		{
 			if ( Input.Pressed( "use" ) && Game.IsServer )
 			{
-				Vector3 startPos = Position;
-				startPos += Vector3.Up * (CollisionBounds.Maxs.z * Scale) * 0.75f;
 
-				var tr = Trace.Ray( startPos, startPos + EyeRotation.Forward * 100 )
+				var tr = Trace.Ray( Camera.Position, Camera.Position + EyeRotation.Forward * 115f )
 					.UseHitboxes( true )
 					.Ignore( this )
 					.Run();
@@ -292,13 +311,13 @@ partial class Player : AnimatedEntity
 				DebugOverlay.TraceResult( tr, 5f );
 
 
-				if ( tr.Hit && tr.Entity is GlassShard glass )
+				if ( tr.Hit && tr.Entity.IsValid && tr.Entity is not Player )
 				{
 					var DmgInfo = DamageInfo.FromBullet( tr.EndPosition, Velocity * tr.Direction, 10000f )
 						.UsingTraceResult( tr )
 						.WithAttacker( this );
 
-					glass.TakeDamage( DmgInfo );
+					tr.Entity.TakeDamage( DmgInfo );
 				}
 			}
 			
@@ -337,13 +356,16 @@ partial class Player : AnimatedEntity
 	{
 		SetModel( prop.GetModelName() );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, prop.CollisionBounds.Mins, prop.CollisionBounds.Maxs );
+		
+		Tags.Add( "prop" );
 
 		EnableHitboxes = true;
 
 		Scale = prop.Scale;
 		RenderColor = prop.RenderColor;
-		CollisionBounds = prop.CollisionBounds;
+		CollisionBounds = prop.CollisionBounds; 
 		HitboxSet = prop.HitboxSet;
+		
 		SetMaterialGroup( prop.GetMaterialGroup() );
 
 		Components.Add( new PropController() );

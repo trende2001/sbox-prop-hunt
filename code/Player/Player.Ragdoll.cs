@@ -24,7 +24,7 @@ public partial class Player
 		ent.Rotation = Rotation;
 		ent.UsePhysicsCollision = true;
 
-		ent.CopyFrom( this );
+		ent.Model = Model.Load( "models/citizen/citizen.vmdl" );
 		ent.TakeDecalsFrom( this );
 		ent.SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
 		ent.CopyBonesFrom( this );
