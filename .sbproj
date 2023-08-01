@@ -31,7 +31,8 @@
         "trigger": "Trigger",
         "ladder": "Ignore",
         "water": "Trigger",
-        "player": "Collide"
+        "player": "Collide",
+        "prop": "Collide"
       },
       "Pairs": [
         {
@@ -62,6 +63,20 @@
         {
           "a": "trigger",
           "b": "player"
+        },
+        {
+          "a": "prop",
+          "b": "prop",
+          "r": "Collide"
+        },
+        {
+          "a": "player",
+          "b": "prop",
+          "r": "Collide"
+        },
+        {
+          "a": "solid",
+          "b": "prop"
         }
       ]
     },
@@ -72,12 +87,12 @@
       {
         "Name": "My New Config",
         "GameIdent": "local.prop_hunt#local",
-        "MapName": "baks.office",
-        "MaxPlayers": 2,
+        "MapName": "thieves.skyscraper",
+        "MaxPlayers": 5,
         "GameSettings": {},
         "Addons": "",
         "PreLaunchCommand": "sv_lan 1;",
-        "PostLaunchCommand": ""
+        "PostLaunchCommand": "bot_add 0;"
       },
       {
         "Name": "Untitled Config",
