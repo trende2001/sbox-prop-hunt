@@ -54,7 +54,7 @@ public partial class Gun : Weapon
 			Game.SetRandomSeed( Time.Tick + i );
 			var forward = Owner.AimRay.Forward;
 			forward += Vector3.Random * spread;
-			var tr = Trace.Ray( Owner.AimRay.Position, Owner.AimRay.Position + (forward * 65565) ).Ignore( Owner ).WithAnyTags( "solid", "prop", "player" ).WithoutTags( "trigger" ).Run();
+			var tr = Trace.Ray( Owner.AimRay.Position, Owner.AimRay.Position + (forward * 65565) ).Ignore( Owner ).WithAnyTags( "solid", "prop", "propplayer" ).WithoutTags( "trigger", "seeker" ).Run();
 			if ( tr.Hit )
 			{
 				tr.Surface.DoBulletImpact( tr );
@@ -62,7 +62,12 @@ public partial class Gun : Weapon
 				{
 					if ( tr.Hitbox.HasTag( "head" ) )
 						damage *= 2;
-					tr.Entity.TakeDamage( DamageInfo.FromBullet( tr.HitPosition, forward * force, damage ).WithWeapon( this ).WithAttacker( Owner ).WithTag( "prop" ) );
+					tr.Entity.TakeDamage( DamageInfo.FromBullet( tr.HitPosition, forward * force, damage ).WithWeapon( this ).WithAttacker( Owner ).WithTag( "propplayer" ) );
+				}
+
+				if ( !tr.Entity.Tags.Has( "propplayer" ) )
+				{
+					Owner.TakeDamage( DamageInfo.Generic( 5f ) );
 				}
 			}
 		}

@@ -1,17 +1,24 @@
 ﻿namespace MyGame;
 
 using Sandbox;
+using System;
+using System.Collections.Generic;
 
 public class Props : BaseTeam
 {
 	public override string TeamName { get; } = "Props";
 	public override Color TeamColor { get; } = Color.FromBytes( 51, 153, 255 );
+	
+	public static IList<string> advTeams = new List<string> { "Seekers" };
+
+	public override IList<string> AdversaryTeams { get; } = advTeams;
+
 
 	public override void AddPlayer( Player player )
 	{
 		base.AddPlayer( player );
-
-		player.Respawn();
+		
+		player.Tags.Add( "propplayer" );
 	}
 
 	[ConCmd.Admin( "become_props" )]

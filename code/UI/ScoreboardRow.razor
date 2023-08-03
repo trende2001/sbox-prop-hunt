@@ -1,0 +1,53 @@
+@using Sandbox
+@using System
+
+@namespace MyGame
+
+<root>
+    <img src="avatar:@Client.SteamId" />
+    <label class="name" style="color: @((Client.Pawn as Player)?.Team?.TeamColor.Hex ?? Color.White.Hex)">@Client.Name</label>
+    <label class="name" style="color: white">@((Client.Pawn as Player)?.TeamName)</label>
+    <label class="ping">@Client.Ping</label>
+</root>
+
+@code {
+    public IClient Client { get; set; }
+    protected override int BuildHash()
+    {
+        var player = Client.Pawn as Player;
+        return HashCode.Combine(Client.Ping, player?.Team?.GetHashCode());
+    }
+}
+
+<style>
+    ScoreboardRow {
+        align-items: center;
+        flex-shrink: 0;
+        width: 300px;
+        padding: 5px;
+
+        .name {
+            flex-grow: 1;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .ping {
+            flex-shrink: 0;
+            color: white;
+        }
+
+        img {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        label {
+            text-align: center;
+            font-size: 23px;
+            font-family: Poppins;
+            text-shadow: 2px 2px 0px black;
+        }
+    }
+</style>

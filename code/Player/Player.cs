@@ -10,6 +10,8 @@ namespace MyGame;
 
 partial class Player : AnimatedEntity
 {
+	private TimeSince NextTauntTime { get; set; }
+	
 	private BaseTeam team { get; set; } = null;
 	public BaseTeam Team
 	{
@@ -49,8 +51,11 @@ partial class Player : AnimatedEntity
 		base.Spawn();
 		Velocity = Vector3.Zero;
 		Components.RemoveAll();
+		
 		LifeState = LifeState.Alive;
 		Health = 100;
+		
+		Tags.Clear();
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		
@@ -66,7 +71,6 @@ partial class Player : AnimatedEntity
 		Ammo.ClearAmmo();
 		CreateHull();
 		Tags.Add( "player" );
-		Tags.Remove( "prop" );
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
@@ -88,8 +92,6 @@ partial class Player : AnimatedEntity
 	{
 		Event.Run( "Player.PreRespawn", this );
 		Spawn();
-		RemoveViewmodelRPC(To.Single( this ));
-		Tags.Remove( "prop" );
 		Event.Run( "Player.PostRespawn", this );
 	}
 
@@ -214,11 +216,11 @@ partial class Player : AnimatedEntity
 		{
 			EnableAllCollisions = false;
 			EnableDrawing = false;
-			Inventory.DropItem( Inventory.ActiveChild );
+			/*Inventory.DropItem( Inventory.ActiveChild );
 			foreach ( var item in Inventory.Items.ToList() )
 			{
 				Inventory.DropItem( item );
-			}
+			}*/
 			Inventory.Items.Clear();
 			Components.Add( new NoclipController() );
 		}
@@ -320,11 +322,26 @@ partial class Player : AnimatedEntity
 					tr.Entity.TakeDamage( DmgInfo );
 				}
 			}
-			
-			if ( Input.Pressed( "Flashlight" ) && Game.IsServer )
+		}
+		
+					
+		if ( Input.Pressed( "Flashlight" ) && Game.IsServer )
+		{
+			if ( NextTauntTime >= 40 )
 			{
-				var sound = PlaySound( "random_taunts" );
-				sound.SetVolume( 1.9f );
+				switch ( TeamName )
+				{
+					case "Props":
+						var sound = PlaySound( "random_taunts_props" );
+						sound.SetVolume( 1.9f );
+						break;
+					case "Seekers":
+						var sound2 = PlaySound( "random_taunts" );
+						sound2.SetVolume( 1.9f );
+						break;
+				}
+
+				NextTauntTime = 0f;
 			}
 		}
 
@@ -357,8 +374,6 @@ partial class Player : AnimatedEntity
 		SetModel( prop.GetModelName() );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, prop.CollisionBounds.Mins, prop.CollisionBounds.Maxs );
 		
-		Tags.Add( "prop" );
-
 		EnableHitboxes = true;
 
 		Scale = prop.Scale;

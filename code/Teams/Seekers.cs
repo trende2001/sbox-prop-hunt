@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace MyGame;
 
@@ -6,6 +7,10 @@ public class Seekers : BaseTeam
 {
 	public override string TeamName { get; } = "Seekers";
 	public override Color TeamColor { get; } = Color.Green;
+	
+	public static IList<string> advTeams = new List<string> { "Props" };
+
+	public override IList<string> AdversaryTeams { get; } = advTeams;
 
 	public override float TeamPlayerPercentage => 1f / PlayersPerSeeker;
 
@@ -15,10 +20,15 @@ public class Seekers : BaseTeam
 	public override void AddPlayer( Player player )
 	{
 		base.AddPlayer( player );
-
+		
 		player.Respawn();
-
+		
 		player.Inventory.AddItem( new Pistol() );
+		player.Inventory.AddItem( new MP5() );
+
+		player.Ammo.GiveAmmo( AmmoType.Pistol, 90 );
+		
+		player.Tags.Add( "seeker" );
 	}
 
 	public override bool ShouldWin()

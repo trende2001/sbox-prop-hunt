@@ -32,6 +32,8 @@ public abstract class BaseTeam
 			return Players.Where( p => p.LifeState == LifeState.Dead );
 		}
 	}
+	
+	public virtual IList<string> AdversaryTeams { get; } = new List<string>();
 
 	protected BaseTeam()
 	{
@@ -69,9 +71,12 @@ public abstract class BaseTeam
 
 	public virtual bool ShouldWin()
 	{
-		if ( Teams.GetByName( "Props" ).Players.Where( i => i.LifeState == LifeState.Alive && i.IsValid ).Count() > 0)
+		foreach ( var team in this.AdversaryTeams )
 		{
-			return false;
+			if ( Teams.GetByName( team ).Players.Where( i => i.LifeState == LifeState.Alive ).Count() > 0 )
+			{
+				return false;
+			}
 		}
 
 		return true;

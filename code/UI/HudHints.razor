@@ -3,6 +3,8 @@
 @using Sandbox.UI;
 @using Sandbox.UI.Construct; 
 @using System;
+@using System.Diagnostics
+@using Trace = Sandbox.Trace
 @namespace MyGame
 
 @inherits Panel
@@ -45,21 +47,43 @@
                 margin-left: 4px;
             }
         }
+        
+            .reload {
+                position: absolute;
+                height: 12px;
+                opacity: 0;
+                transition: all 0.1s ease;
+                transform-origin: 0% 50%;
+                transform: scaleX( 0 );
+        
+        
+                &.show {
+                    transform: scaleX( 1 );
+                    opacity: 0.8;
+                }
+        
+                left: 39.8%;
+                top: 75%;
+                margin-top: -12px;
+                margin-left: 40px;
+            }
     }
 </style>
 
 <root>
 	<div class="pickup" @ref="PickupHint">
-		@*
-		<div>E</div>
-		*@
 		<label class="name" @ref="PickupLabel"/>
+	</div>
+	
+	<div class="reload" @ref="PickupAdvice">
+		<label>Right click to break (if eligible)</label>
 	</div>
 </root>
 
 @code {
 	public Panel PickupHint { get; set; }
 	public Label PickupLabel { get; set; }
+	public Panel PickupAdvice { get; set; }
 
     private Entity lastObserved;
     protected Entity LastObserved
@@ -103,10 +127,11 @@
 			.Run();
 
 
-	    var isUsable = (tr.Hit && tr.Entity is IUse use && use.IsUsable(player) && tr.Distance < 128f || tr.Entity is Prop && player?.Team is Props && tr.Distance < 115f);
+	    var isUsable = (tr.Hit && tr.Entity is IUse use && use.IsUsable(player) && tr.Distance < 128f || (tr.Entity is Prop && player?.Team is Props && tr.Distance < 115f || tr.Entity is GlassShard));
 
 		LastObserved = isUsable ? tr.Entity : null;
 		PickupHint.SetClass( "show", isUsable );
+	    PickupAdvice.SetClass( "show", isUsable && player?.Team is Props );
 	    
 		if ( isUsable )
 		{

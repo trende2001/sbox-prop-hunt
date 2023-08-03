@@ -52,39 +52,22 @@ public partial class PropHuntGame
 			Log.Info( $"Failed to give {entName}. Not a valid entity." );
 		}
 	}
-
-	[ConCmd.Server( "reset_game" )]
-	public static void ResetGame()
-	{
-		/*
-		// If we don't have permission, exit.
-		if ( !ConsoleSystem.Caller.HasPermission( "admin" ) )
-		{
-			Log.Info( "No permission: reset_game" );
-			return;
-		}
-		*/
-
+	
+	public static void CleanUpFull()
+	{ 
 		// Tell our game that all clients have just left.
 		foreach ( IClient cl in Game.Clients )
 		{
-			PropHuntGame.Current.ClientDisconnect( cl, NetworkDisconnectionReason.DISCONNECT_BY_USER );
+			PropHuntGame.Current.ClientDisconnect( cl, NetworkDisconnectionReason.SERVER_SHUTDOWN );
 		}
 
 		// Cleanup on clients
 		CleanupClientEntities( To.Everyone );
-
-		// Delete everything except the clients and the world 
-		foreach ( Entity ent in Entity.All )
-		{
-			if ( ent is not IClient &&
-				ent is not WorldEntity )
-				ent.Delete();
-		}
-
+		
 		// Reset the map, this will respawn all map entities
 		Game.ResetMap( Entity.All.Where( x => x is Player ).ToArray() );
-		
+
+		// delete the game.
 		PropHuntGame.Current.Delete();
 
 		// Create a brand new game
@@ -98,41 +81,90 @@ public partial class PropHuntGame
 		{
 			PropHuntGame.Current.ClientJoined( cl );
 		}
-	}
-	public static void CleanupRound()
+	} 
+
+	public static void CleanUpRound()
 	{
+
+		// Tell our game that all clients have just left.
 		foreach ( IClient cl in Game.Clients )
 		{
 			PropHuntGame.Current.ClientDisconnect( cl, NetworkDisconnectionReason.SERVER_SHUTDOWN );
 		}
 
-		Entity[] KeepEntities = { HUDEntity.Current, Current };
 		
-		CleanupClientEntities(To.Everyone);
-		
-		Game.ResetMap( KeepEntities );
+		Entity[] keep = { HUDEntity.Current, PropHuntGame.Current };
 
-		Current.RoundState = RoundState.None;
-		Current.TimeSinceRoundStateChanged = 0;
-		
+		// Cleanup on clients
+		CleanupClientEntities( To.Everyone );
+
+		// Reset the map, this will respawn all map entities
+		Game.ResetMap( keep );
+
+		(PropHuntGame.Current as PropHuntGame).RoundState = RoundState.None;
+		(PropHuntGame.Current as PropHuntGame).TimeSinceRoundStateChanged = 0;
+
 		HUDEntity.Current.Delete();
 		_ = new HUDEntity();
 
+
+		// Fake a post level load after respawning entities, just incase something uses it
+		//MyGame.Current.PostLevelLoaded();
+
+		// Tell our new game that all clients have just joined to set them all back up.
 		foreach ( IClient cl in Game.Clients )
 		{
 			PropHuntGame.Current.ClientJoined( cl );
 		}
 	}
-
-	[ConCmd.Admin( "reset_round" )]
+	
+	[ConCmd.Admin("reset_round")]
 	public static void ResetRound()
 	{
-		CleanupRound();
+		CleanUpRound();
 	}
-	
+
+	static bool DefaultCleanupFilter( Entity ent )
+	{
+		// Basic Source engine stuff
+		var className = ent.ClassName;
+		if ( className == "player" || className == "worldent" || className == "worldspawn" || className == "soundent" || className == "player_manager" )
+		{
+			return false;
+		}
+
+		// When creating entities we only have classNames to work with..
+		// The filtered entities below are created through code at runtime, so we don't want to be deleting them
+		if ( ent == null || !ent.IsValid ) return true;
+
+		// Gamemode entity
+		if ( ent is BaseGameManager ) return false;
+
+		// HUD entities
+		if ( ent.GetType().IsBasedOnGenericType( typeof( HudEntity<> ) ) ) return false;
+
+		// Player related stuff, clothing and weapons
+		foreach ( var cl in Game.Clients )
+		{
+			if ( ent.Root == cl.Pawn ) return false;
+		}
+
+		// Do not delete view model
+		if ( ent is BaseViewModel ) return false;
+		
+		return true;
+	}
+	[ClientRpc]
+	public static void CleanupClientHUD()
+	{
+
+		HUDRootPanel.Current.Delete( true );
+	}
+
 	[ClientRpc]
 	public static void CleanupClientEntities()
-	{
+	{ 
+		Decal.Clear( true, true );
 		foreach ( Entity ent in Entity.All )
 		{
 			if ( ent.IsClientOnly )
@@ -140,9 +172,4 @@ public partial class PropHuntGame
 		}
 	}
 
-	/*[ConCmd.Server( "create_popup" )]
-	public static void CreatePopup(string text, string title, float duration)
-	{
-		PopupSystem.DisplayPopup( To.Everyone, text, title, duration );
-	}*/
 }

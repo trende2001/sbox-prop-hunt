@@ -13,6 +13,8 @@
 			width: 100%;
 			justify-content: center;
 			pointer-events: none;
+			
+			z-index: 100;
 		}
 	
 		.timer {
@@ -46,42 +48,36 @@
 
 <root class="root">  
 	<div class="timer" @ref=TimePanel>
-		@if (PropHuntGame.Current is PropHuntGame game && game.RoundState != RoundState.Voting)
+		@if (PropHuntGame.Current is PropHuntGame game)
 		{
 			@if (game.RoundState == RoundState.WaitingForPlayers)
+		{
+			<div class="segtop">Waiting for players</div>
+			<div class="time">
+				@Format(TimeSpan.FromSeconds(game.TimeSinceRoundStateChanged.Relative.CeilToInt()))
+			</div>
+		}
+		else
+		{
+			if (game.RoundState == RoundState.Starting)
 			{
-				<div class="segtop">Waiting for players</div>
-				<div class="time">
-					@Format(TimeSpan.FromSeconds(game.TimeSinceRoundStateChanged.Relative.CeilToInt()))
-				</div>
+				<div class="segtop">Preparing...</div>
 			}
-			else
+			else if (game.RoundState == RoundState.Started)
 			{
-				if (game.RoundState == RoundState.Starting)
-				{
-					<div class="segtop">Preparing...</div>
-				}
-				else if (game.RoundState == RoundState.Started)
-				{
-					<div class="segtop">Ongoing Round</div>
-				}
-				else if (game.RoundState == RoundState.Ending)
-				{
-					@if (PropHuntGame.Current.WinningTeamName != null)
-					{
-						<div class="segtop" style="text-transform: uppercase">@($"{PropHuntGame.Current.WinningTeamName} win!")</div>
-					}
-				}
-				
-				<div class="time">
-					@if (PropHuntGame.Current.RoundState == RoundState.Started &&
-					     Game.LocalPawn is Player ply && (ply.Team != null || ply.LifeState == LifeState.Dead) &&
-					     (SinceLastStatusChange.Relative.CeilToInt() % 10 > 5))
-					{
-						@Format(TimeSpan.FromSeconds(game.TimeSinceRoundStateChanged.Relative.CeilToInt()))
-					}
-					</div>
+				<div class="segtop">Ongoing Round</div>
 			}
+			else if (game.RoundState == RoundState.Ending)
+			{
+				@if (PropHuntGame.Current.WinningTeamName != null)
+				{
+					<div class="segtop" style="text-transform: uppercase">@($"{PropHuntGame.Current.WinningTeamName} win!")</div>
+				}
+			}
+			<div class="time">
+				@Format(TimeSpan.FromSeconds(game.RoundLength - game.TimeSinceRoundStateChanged.Relative.CeilToInt()))
+			</div>
+		}
 		}
 	</div>
 </root> 

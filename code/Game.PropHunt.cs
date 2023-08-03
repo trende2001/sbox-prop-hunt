@@ -29,7 +29,7 @@ public partial class PropHuntGame : GameManager {
 		Help = "The base number of seconds a round should go on, before any Haste Mode adjustments. The default is 360 seconds (6 minutes).",
 		Saved = true
 	)]
-	public static int RoundTime { get; set; } = 6 * 60;
+	public static int RoundTime { get; set; } = 3 * 60;
 
 	[ConVar.Replicated(
 		"ph_mp_postroundtime",
@@ -82,6 +82,16 @@ public partial class PropHuntGame : GameManager {
 
 		TimeSinceRoundStateChanged = 0;
 		RoundLength = RoundTime;
+
+		foreach ( var player in Entity.All.OfType<Player>().ToList() )
+		{
+			player.Health = 100;
+
+			if ( player.LifeState != LifeState.Alive )
+			{
+				player.Respawn();
+			}
+		}
 		
 		AssignToTeams();
 		
@@ -158,7 +168,7 @@ public partial class PropHuntGame : GameManager {
 		WinningTeamName = team.TeamName;
 		WinningTeamColor = team.TeamColor;
 		Log.Info( team.TeamName + " win!" );
-		PopupSystem.DisplayPopup( "Game Over", $"{team.TeamName}s win!" );
+		PopupSystem.DisplayPopup( "Game Over", $"{team.TeamName} win!" );
 		OnRoundEnding();
 	}
 
@@ -167,6 +177,8 @@ public partial class PropHuntGame : GameManager {
 		RoundState = RoundState.Ending;
 		TimeSinceRoundStateChanged = 0;
 		RoundLength = PostRoundTime;
+		
+		// TODO: show spectator panel to everyone (client rpc)
 	}
 
 	[Net] public int RoundNumber { get; set; } = 1;
@@ -180,6 +192,6 @@ public partial class PropHuntGame : GameManager {
 		// TODO: implement RTV and map votes
 
 		RoundNumber++;
-		CleanupRound();
+		ResetRound();
 	}
 }
