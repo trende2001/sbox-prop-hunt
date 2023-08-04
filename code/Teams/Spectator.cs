@@ -34,6 +34,15 @@ public class Spectator : BaseTeam
 			child.EnableDrawing = true;
 		}
 	}
+	
+	[ConCmd.Admin( "become_spectator")]
+	public static void ToggleSpectator()
+	{
+		if ( ConsoleSystem.Caller.Pawn is Player player )
+		{
+			player.IsSpectator = !player.IsSpectator;
+		}
+	}
 
 	public override bool ShouldWin()
 	{

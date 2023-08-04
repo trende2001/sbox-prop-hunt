@@ -30,6 +30,10 @@ public partial class Weapon : Carriable
 	public override void Simulate( IClient cl )
 	{
 		if ( Owner is not Player ) return;
+		
+		if ( (cl.Pawn as Player).TeamName == "Seekers" && PropHuntGame.Current.RoundState == RoundState.Starting )
+			return;
+		
 		if ( CanReloadPrimary() && Input.Pressed( "Reload" ) )
 		{
 			TimeSincePrimaryReload = 0;

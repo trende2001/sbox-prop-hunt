@@ -21,6 +21,7 @@ public partial class NoclipController : MovementComponent
 		Events?.Clear();
 		Tags?.Clear();
 
+		pl.NetworkedEyeRotation = pl.ViewAngles.ToRotation();
 		pl.EyeLocalPosition = Vector3.Up * (EyeHeight * pl.Scale);
 		pl.EyeRotation = pl.ViewAngles.ToRotation();
 

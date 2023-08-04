@@ -39,7 +39,7 @@
 		if (player == null)
 			return;
 		
-		//SetClass("show", (player.Team is Seekers && PropHuntGame.Current.RoundState == RoundState.Started ? true : false ));
+		SetClass("show", (player.Team is Seekers && PropHuntGame.Current.RoundState == RoundState.Starting ? true : false ));
 	}
 
 }

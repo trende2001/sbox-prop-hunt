@@ -71,18 +71,32 @@
 </style>
 
 <root>
+		@if ((Game.LocalPawn is Player ply))
+    	{ 
+    		if (ply.Components.TryGet<SpectatorComponent>(out var cmp) && cmp.CurrentlySpectating is Player specply && cmp.SpectateMode == SpectatingMode.SpectatePlayer)
+    		{
+    			<div class="reload" @ref="CurrentPlayerSpectated">@specply.Client.Name</div>
+    		}
+    		else
+    		if (ply.TeamName is string team)
+    		{
+    			<div class="reload" @ref="CurrentPlayerSpectated">@team</div>
+    		}
+	    }
+	
 	<div class="pickup" @ref="PickupHint">
 		<label class="name" @ref="PickupLabel"/>
 	</div>
-	
+
 	<div class="reload" @ref="PickupAdvice">
-		<label>Right click to break (if eligible)</label>
+		<label>Right click to break</label>
 	</div>
 </root>
 
 @code {
 	public Panel PickupHint { get; set; }
 	public Label PickupLabel { get; set; }
+	public Panel CurrentPlayerSpectated { get; set; }
 	public Panel PickupAdvice { get; set; }
 
     private Entity lastObserved;
@@ -132,6 +146,8 @@
 		LastObserved = isUsable ? tr.Entity : null;
 		PickupHint.SetClass( "show", isUsable );
 	    PickupAdvice.SetClass( "show", isUsable && player?.Team is Props );
+	    
+	    //CurrentPlayerSpectated.SetClass("show", player?.Team is Spectator);
 	    
 		if ( isUsable )
 		{

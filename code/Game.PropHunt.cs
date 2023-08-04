@@ -72,17 +72,7 @@ public partial class PropHuntGame : GameManager {
 
 		TimeSinceRoundStateChanged = 0;
 		RoundLength = PreRoundTime;
-
-		Sound.FromScreen( To.Everyone, "round.countdown.30s" );
-	}
-
-	public virtual void OnRoundStart()
-	{
-		RoundState = RoundState.Started;
-
-		TimeSinceRoundStateChanged = 0;
-		RoundLength = RoundTime;
-
+		
 		foreach ( var player in Entity.All.OfType<Player>().ToList() )
 		{
 			player.Health = 100;
@@ -94,13 +84,32 @@ public partial class PropHuntGame : GameManager {
 		}
 		
 		AssignToTeams();
+
+		Sound.FromScreen( To.Everyone, "seekers.unblind.vo" );
 		
+		PopupSystem.DisplayPopup( To.Everyone, "Hide or die", "The seekers will be unblinded in 30 seconds", 30f );
+	}
+
+	public virtual void OnRoundStart()
+	{
+		RoundState = RoundState.Started;
+
+		TimeSinceRoundStateChanged = 0;
+		RoundLength = RoundTime;
+		
+		Sound.FromScreen( To.Everyone, "seekers.unleashed.vo" );
+
 		Decal.Clear( To.Everyone, true, true );
 	}
 
 	public virtual void AssignToTeams()
 	{
 		var spectator = Teams.Get<Spectator>();
+		foreach ( var player in Entity.All.OfType<Player>().Where( x => x.IsSpectator ) )
+		{
+			Log.Info( "Adding " + player.Client.Name + " to spectator" );
+			spectator.AddPlayer( player );
+		}
 
 		foreach ( var team in Teams.RegisteredTeams )
 		{
@@ -168,7 +177,15 @@ public partial class PropHuntGame : GameManager {
 		WinningTeamName = team.TeamName;
 		WinningTeamColor = team.TeamColor;
 		Log.Info( team.TeamName + " win!" );
-		PopupSystem.DisplayPopup( "Game Over", $"{team.TeamName} win!" );
+
+		if ( team is Props )
+			Sound.FromScreen(To.Everyone, "props.win.vo");
+		else
+		{
+			Sound.FromScreen(To.Everyone, "seekers.win.vo");
+		}
+		
+		//PopupSystem.DisplayPopup( "Game Over", $"{team.TeamName} win!" );
 		OnRoundEnding();
 	}
 

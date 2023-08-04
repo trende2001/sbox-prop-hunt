@@ -1,0 +1,81 @@
+﻿@using Sandbox;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+
+@namespace MyGame
+
+@inherits Sandbox.UI.Panel;
+
+<style>
+    .player {
+        position: absolute;
+        font-family: 'Poppins';
+        font-weight: 400;
+        color: white;
+        font-size: 16px;
+        left: 0;
+        top: 0;
+        text-stroke: 4px rgba(64,64,64,0.7);
+    }
+
+    SpectatorPlayerPanel {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<root>
+    @foreach( var (player, (position, color)) in positions )
+    {
+        if (player == null || ! player.IsValid() || player.Client == null || ! player.Client.IsValid()) continue;
+        <div
+            class="player"
+            style=@($"left: {position.x}; top: {position.y}; color: {color.Hex};")
+        >
+            @player.Client.Name
+        </div>
+    }
+</root>
+
+@code {
+    private Dictionary<Player, (Vector2, Color)> positions = new();
+
+    public SpectatorPlayerPanel()
+    {
+       // HUDRootPanel.Current.AddChild(this);
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        /*positions = new();
+
+        var spec = Game.LocalPawn.Components.Get<SpectatorComponent>();
+
+        foreach( var player in Game.Clients.Where(i => i.IsValid && i.Pawn is Player ply && ply.LifeState == LifeState.Alive) ){
+            if (
+                !player.IsValid ||
+                player.Pawn == Game.LocalPawn ||
+                (spec != null && spec.SpectateMode == SpectatingMode.SpectatePlayer && spec.CurrentlySpectating == ((player.Pawn) as Player))
+            ) continue;
+
+            var pos = ((player.Pawn as Player).GetBoneTransform("head").Position + (Vector3.Up * 10f)).ToScreen();
+
+            positions[(player.Pawn as Player)] = (new Vector2((pos.x * (Screen.Width / ScaleToScreen)) - ((50 / ScaleToScreen) / 2), (pos.y * (Screen.Height / ScaleToScreen)) - ((50 / ScaleToScreen) / 2)), (player.Pawn as Player).TeamColor.Hex);
+        }*/
+    }
+
+    protected override int BuildHash()
+    {
+        HashCode hc = new();
+
+        foreach( var position in positions.Values )
+        {
+            hc.Add(position);
+        }
+
+        return hc.ToHashCode();
+    }
+}

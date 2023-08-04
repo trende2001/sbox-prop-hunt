@@ -119,6 +119,10 @@ public partial class WalkController : MovementComponent
 		Events?.Clear();
 		Tags?.Clear();
 
+		if ( pl.TeamName == "Seekers" && PropHuntGame.Current.RoundState == RoundState.Starting )
+			return;
+
+		pl.NetworkedEyeRotation = pl.ViewAngles.ToRotation();
 		pl.EyeLocalPosition = Vector3.Up * (EyeHeight * pl.Scale);
 		pl.EyeRotation = pl.ViewAngles.ToRotation();
 

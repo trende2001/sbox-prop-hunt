@@ -32,7 +32,9 @@ partial class Player : AnimatedEntity
 		}
 	}
 	[Net] public string TeamName { get; set; }
-	[Net] public Color TeamColour { get; set; }
+	[Net] public Color TeamColor { get; set; }
+	
+	public TimeSince TimeSinceLifeStateChanged;
 	
 	public bool IsSpectator
 	{
@@ -59,8 +61,6 @@ partial class Player : AnimatedEntity
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		
-		PopupSystem.DisplayPopup( To.Everyone, "Hide or die", "The seekers will be unblinded in 15 seconds", 15f );
-
 		Components.Add( new WalkController() );
 		Components.Add( new FirstPersonCamera() );
 		Components.Add( new AmmoStorageComponent() );
@@ -81,7 +81,81 @@ partial class Player : AnimatedEntity
 		EnableHitboxes = true;
 
 		MoveToSpawnpoint();
+		
+		var forcespawn = LifeState == LifeState.Respawning;
+
+		PlayerSpawnGameCode( forcespawn );
+		
 		Event.Run( "Player.PostSpawn", this );
+	}
+
+	private void PlayerTickProphunt()
+	{
+		if ( Game.IsServer )
+		{
+			TeamName = Team?.TeamName;
+			if ( Team != null ) TeamColor = Team.TeamColor;
+
+			if ( IsSpectator && LifeState == LifeState.Alive )
+			{
+				Teams.Get<Spectator>().AddPlayer( this );
+			}
+
+			if ( PropHuntGame.Current.RoundState < RoundState.Started && !IsSpectator && TeamName == "Spectator" )
+			{
+				Teams.Get<Spectator>().RemovePlayer( this );
+			}
+		}
+	}
+
+	private void SimulateGameCode( IClient cl )
+	{
+		if ( PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Starting )
+		{
+			if ( LifeState == LifeState.Dead && TimeSinceLifeStateChanged > 5 && !IsSpectator && Game.IsServer )
+			{
+				Respawn();
+			}
+		}
+
+		PlayerTickProphunt();
+	}
+
+	private void PlayerSpawnGameCode(bool forcespawn = false)
+	{
+		// TODO: split all player functions into components and add them here
+		
+		if ( !forcespawn && !(PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Starting || PropHuntGame.Current.RoundState == RoundState.None) )
+		{
+			LifeState = LifeState.Dead;
+			Health = 0;
+			Inventory.ActiveChild = null;
+			Inventory.ActiveChildInput = null;
+			EnableAllCollisions = false;
+			EnableDrawing = false;
+			
+			if ( Game.IsServer ) Components.Add( new NoclipController() );
+			if ( Game.IsServer ) Components.Add( new SpectatorComponent() );
+			
+			TimeSinceLifeStateChanged = 0;
+
+			Teams.Get<Spectator>().AddPlayer( this );
+
+			return;
+		}
+		
+		TimeSinceLifeStateChanged = 0;
+	}
+
+	private void PlayerDeathGameCode()
+	{
+		Input.ReleaseAction( "Attack1" );
+		Input.ReleaseAction( "Jump" );
+		Input.ReleaseAction( "Attack2" );
+		
+		if ( Game.IsServer ) Components.Add( new SpectatorComponent() );
+		
+		TimeSinceLifeStateChanged = 0;
 	}
 
 	/// <summary>
@@ -157,6 +231,8 @@ partial class Player : AnimatedEntity
 	/// </summary>
 	[Net, Predicted, Browsable( false )]
 	public Rotation EyeLocalRotation { get; set; }
+	
+	[Net] public Rotation NetworkedEyeRotation { get; set; }
 
 	public BBox Hull
 	{
@@ -208,6 +284,9 @@ partial class Player : AnimatedEntity
 		Event.Run( "Player.PreOnKilled", this );
 		LifeState = LifeState.Dead;
 		BecomeRagdoll( LastDamage );
+		
+		PlayerDeathGameCode();
+		
 		RemoveViewmodelRPC(To.Single( this ));
 
 		Inventory.ActiveChild = null;
@@ -261,6 +340,8 @@ partial class Player : AnimatedEntity
 	public override void Simulate( IClient cl )
 	{
 		base.Simulate( cl );
+		
+		SimulateGameCode( cl );
 		// toggleable third person
 		if ( Input.Pressed( "View" ) && Game.IsServer )
 		{
@@ -274,7 +355,7 @@ partial class Player : AnimatedEntity
 			}
 		}
 
-		if ( Team is Props )
+		if ( Team is Props && Team is not Spectator)
 		{
 			if ( Input.Pressed( "use" ) && Game.IsServer )
 			{
@@ -336,7 +417,7 @@ partial class Player : AnimatedEntity
 						sound.SetVolume( 1.9f );
 						break;
 					case "Seekers":
-						var sound2 = PlaySound( "random_taunts" );
+						var sound2 = PlaySound( "random_taunts_seekers" );
 						sound2.SetVolume( 1.9f );
 						break;
 				}
