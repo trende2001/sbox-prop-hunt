@@ -31,7 +31,7 @@ public partial class Weapon : Carriable
 	{
 		if ( Owner is not Player ) return;
 		
-		if ( (cl.Pawn as Player).TeamName == "Seekers" && PropHuntGame.Current.RoundState == RoundState.Starting )
+		if ( (cl.Pawn as Player).TeamName == "Seekers" && PropHuntGame.Current.RoundState == RoundState.Preparing )
 			return;
 		
 		if ( CanReloadPrimary() && Input.Pressed( "Reload" ) )

@@ -5,7 +5,7 @@ namespace MyGame;
 /// <summary>
 ///  Something that can go into the player's inventory and have a worldmodel and viewmodel etc, 
 /// </summary>
-public class Carriable : AnimatedEntity
+public partial class Carriable : AnimatedEntity
 {
 
 	/// <summary>
@@ -13,6 +13,7 @@ public class Carriable : AnimatedEntity
 	/// </summary>
 	public virtual ModelEntity EffectEntity => (ViewModelEntity.IsValid() && IsFirstPersonMode) ? ViewModelEntity : this;
 	public Entity Carrier { get; set; }
+	[Net] public bool CanSwitchItems { get; protected set; } = true;
 	public virtual Model WorldModel => null;
 	public virtual Model ViewModel => null;
 	public BaseViewModel ViewModelEntity { get; protected set; }
@@ -189,6 +190,7 @@ public class Carriable : AnimatedEntity
 			CreateViewModel();
 		}
 	}
+	
 	public virtual void OnActiveEnd()
 	{
 		if ( Parent is Player ) EnableDrawing = false;

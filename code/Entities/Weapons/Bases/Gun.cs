@@ -69,6 +69,11 @@ public partial class Gun : Weapon
 				{
 					Owner.TakeDamage( DamageInfo.Generic( 5f ) );
 				}
+				else
+				{
+					var blood = Particles.Create( "particles/impact.flesh.vpcf", tr.EndPosition );
+					blood.SetPosition( 0, tr.EndPosition );
+				}
 			}
 		}
 	}

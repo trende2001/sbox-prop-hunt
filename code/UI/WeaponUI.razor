@@ -1,0 +1,233 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct; 
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@namespace MyGame
+<style>
+	.WeaponUI {
+		flex-direction:column;
+		position: absolute;
+		bottom: 140px;
+		right: 32px; 
+		width: 230px;
+		background-color: rgba(16,16,16,0.4);
+		//border-radius: 12px;
+		overflow: hidden;
+		//backdrop-filter: blur(32px);
+	} 
+	.Listing {
+		flex-direction: row;
+	}
+	.Weapon {
+		color: white;
+		font-family: Poppins;
+		font-size: 18px;
+		padding:8px;
+		flex-grow: 1;
+		justify-content:space-between;
+	}
+	.WeaponActive {
+		color: white;
+		font-family: Poppins;
+		font-size: 20px;
+		padding: 8px;
+		background-color: rgba(32,32,32,0.7);
+		flex-grow: 1;
+		justify-content: space-between;
+	}
+	.WeaponSelected {
+		color: white;
+		font-family: Poppins;
+		font-size: 20px;
+		padding: 8px;
+		flex-grow: 1;
+		justify-content: space-between;
+		text-stroke: 4px rgba(64,64,64,0.7);
+	}
+	.Number {
+		color: white;
+		font-family: Poppins;
+		font-size: 20px;
+		background-color: rgba(32,32,32,1); 
+		//text-stroke: 4px rgba(64,64,64,0.7);
+		width:29px;
+		justify-content: center;
+		align-items: center;
+	}
+</style>
+
+<root class="WeaponUI">
+	@if (Game.LocalPawn is Player ply)
+	{
+		var i = 0;
+		GetSlotSystemDictionary();
+		//var items = ply.Inventory.Items.OrderBy(OrderOnType);
+		foreach (var slotteditem in SlottedInventory)
+		{
+			if( slotteditem.Value == null || ! slotteditem.Value.IsValid ) continue;
+
+			var cry = slotteditem.Value;
+			i++;
+			var name = TypeLibrary.GetType(cry.GetType()).Title;
+			<div class="Listing">
+
+				<div class="Number">@slotteditem.Key</div>
+				@if (cry == SelectedCarriable)
+				{
+					
+					<div class="WeaponSelected">
+						@name
+						@if (cry is Weapon wpn && wpn.PrimaryAmmoType != AmmoType.None)
+						{
+							//<div>@wpn.PrimaryAmmo / @ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div>
+						}
+					</div>
+				} else if (cry == ply.Inventory.ActiveChild)
+				{
+					<div class="WeaponActive">
+						@name
+						@if (cry is Weapon wpn && wpn.PrimaryAmmoType != AmmoType.None)
+						{
+							//<div>@wpn.PrimaryAmmo / @ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div>
+						}
+					</div>
+				} else {
+					<div class="Weapon">
+						@name
+						@if (cry is Weapon wpn && wpn.PrimaryAmmoType != AmmoType.None)
+						{
+							//<div>@wpn.PrimaryAmmo / @ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div>
+						}
+					</div> 
+				}
+			</div>
+		}
+	}
+</root> 
+@code {
+	TimeSince TimeSinceSelected;
+	Entity SelectedCarriable { get; set; }
+	int SelectedCarriableIndex { get; set; } = -10;
+	[GameEvent.Client.BuildInput]
+	public void invTick()
+	{
+		if (Game.LocalPawn is Player ply && (!(ply.Inventory.GetSlot(ply.Inventory.GetActiveSlot()) is Carriable c) || c.CanSwitchItems ) )
+		{ 
+			List<Entity> items = ply.Inventory.Items.OrderBy(OrderOnType).ToList();
+
+			if (Input.Pressed("Slot1") && SlottedInventory.ContainsKey(1)) ply.Inventory.ActiveChildInput = SlottedInventory[1];
+			if (Input.Pressed("Slot2") && SlottedInventory.ContainsKey(2)) ply.Inventory.ActiveChildInput = SlottedInventory[2];
+			if (Input.Pressed("Slot3") && SlottedInventory.ContainsKey(3)) ply.Inventory.ActiveChildInput = SlottedInventory[3];
+			if (Input.Pressed("Slot4") && SlottedInventory.ContainsKey(4)) ply.Inventory.ActiveChildInput = SlottedInventory[4];
+			if (Input.Pressed("Slot5") && SlottedInventory.ContainsKey(5)) ply.Inventory.ActiveChildInput = SlottedInventory[5];
+			if (Input.Pressed("Slot6") && SlottedInventory.ContainsKey(6)) ply.Inventory.ActiveChildInput = SlottedInventory[6];
+			if (Input.Pressed("Slot7") && SlottedInventory.ContainsKey(7)) ply.Inventory.ActiveChildInput = SlottedInventory[7];
+			if (Input.Pressed("Slot8") && SlottedInventory.ContainsKey(8)) ply.Inventory.ActiveChildInput = SlottedInventory[8];
+			if (Input.Pressed("Slot9") && SlottedInventory.ContainsKey(9)) ply.Inventory.ActiveChildInput = SlottedInventory[9];
+			if (Input.Pressed("Slot0") && SlottedInventory.ContainsKey(10)) ply.Inventory.ActiveChildInput = SlottedInventory[10];
+
+			if (TimeSinceSelected > 0.02f)
+			{
+				var b = SelectedCarriableIndex;
+				if (Input.MouseWheel != 0 && SelectedCarriableIndex == -10)
+				{
+					SelectedCarriableIndex = items.IndexOf(ply.Inventory.ActiveChild);
+				}
+				SelectedCarriableIndex -= Input.MouseWheel; 
+				if (SelectedCarriableIndex != b)
+				{
+					TimeSinceSelected = 0;
+				}
+			}
+
+			if (SelectedCarriableIndex != -10)
+			{
+				if (SelectedCarriableIndex >= ply.Inventory.Items.Count)
+				{
+					SelectedCarriableIndex = 0;
+				} 
+				if (SelectedCarriableIndex < 0 )
+				{
+					SelectedCarriableIndex = ply.Inventory.Items.Count - 1;
+				}
+			} 
+			if (TimeSinceSelected > 2)
+			{
+				SelectedCarriableIndex = -10;
+			}
+			SelectedCarriable = items.ElementAtOrDefault(SelectedCarriableIndex); //[SelectedCarriableIndex];
+			if (TimeSinceSelected <= 2)
+			{
+				if (Input.Pressed("Attack1"))
+				{
+					ply.Inventory.ActiveChildInput = SelectedCarriable; 
+					SelectedCarriableIndex = -10;
+					SelectedCarriable = null;
+					Input.ReleaseAction("Attack1");
+					TimeSinceSelected = 10;
+				}
+				if (Input.Pressed("Attack2"))
+				{ 
+					SelectedCarriableIndex = -10;
+					SelectedCarriable = null;
+					Input.ReleaseAction("Attack2");
+					TimeSinceSelected = 10;
+				}
+			} 
+		}  
+	}
+	[ConVar.Client] public static bool ttt_special_inventory_mode_for_xenthio { get; set; } = false;
+	public IDictionary<int, Entity> SlottedInventory = new Dictionary<int, Entity>();
+	public void GetSlotSystemDictionary()
+	{
+		if (Game.LocalPawn is Player ply)
+		{
+			SlottedInventory = new Dictionary<int, Entity>();
+			var i = 0;
+			foreach (var ent in ply.Inventory.Items.OrderBy(OrderOnType))
+			{
+				if (!ttt_special_inventory_mode_for_xenthio)
+				{
+					var d = OrderOnType(ent) + 1;
+					while (SlottedInventory.ContainsKey(d)) d++;
+					SlottedInventory.Add(d, ent);
+				} else
+				{
+					i++;
+					SlottedInventory.Add(i, ent);
+				}
+			} 
+		}
+	} 
+
+	private static int OrderOnType(Entity item)
+	{
+		if (item is Melee)
+			return 0;
+		if (item is Gun)
+			return 1;
+		if (item is Weapon)
+			return 2;
+		/*if (item is Holstered)
+			return 8;*/
+		return 5;
+	}
+	protected override int BuildHash()
+	{
+		HashCode hash = new();
+		var primaryammo = 0;
+		if ((Game.LocalPawn as Player).Inventory.ActiveChild is Weapon wpn)
+		{
+			primaryammo = wpn.PrimaryAmmo;
+		}
+		hash.Add((Game.LocalPawn as Player).Ammo.Ammo.ToArray());
+		hash.Add((Game.LocalPawn as Player).Inventory.Items.ToArray());
+		hash.Add((Game.LocalPawn as Player).Inventory.ActiveChild);
+		hash.Add((Game.LocalPawn as Player).Inventory.ActiveChildInput);
+		hash.Add(SelectedCarriableIndex);
+		hash.Add(primaryammo);
+		return hash.ToHashCode(); 
+	}
+}

@@ -57,4 +57,10 @@ public partial class PropHuntGame : GameManager
 		if ( reason != NetworkDisconnectionReason.SERVER_SHUTDOWN && reason != NetworkDisconnectionReason.Kicked )
 			Chat.AddChatEntry( To.Everyone,null, $"{cl.Name} has left the game", isInfo: true);
 	}
+	
+	[ClientRpc]
+	public override void OnKilledMessage( long leftid, string left, long rightid, string right, string method )
+	{
+		Sandbox.UI.KillFeed.Current?.AddEntry( leftid, left, rightid, right, method );
+	}
 }

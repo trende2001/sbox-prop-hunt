@@ -2,6 +2,7 @@
 {
 	None,
 	WaitingForPlayers,
+	Preparing,
 	Starting,
 	Started,
 	Ending,

@@ -1,0 +1,59 @@
+﻿@using Sandbox
+@namespace MyGame
+
+<style>
+	InputHints {
+        position: absolute;
+        flex-direction: column;
+        align-items: flex-end;
+        top: 90px;
+        right: 100px;
+        opacity: 0.8;
+        transition: all 150ms ease-out;
+    
+        div {
+            align-items: center;
+    
+            label {
+                font-size: 20px;
+                font-family: Londrina Solid;
+                color: white;
+                font-weight: bold;
+                text-shadow: 1px 1px 2px black;
+            }
+    
+            inputglyph {
+                margin: 5px 0px 5px 2px;
+            }
+        }
+    
+        &.hide {
+            opacity: 0;
+        }
+    }
+</style>
+
+<root>
+    @if ((Game.LocalPawn is Player player))
+    {
+        @if (player.TeamName == "Props")
+        {
+            <div>
+                <label>Turn into Prop</label>
+                <InputGlyph button="use"/>
+            </div>
+            <div>
+                <label>Lock Rotation</label>
+                <InputGlyph button="Attack1"/>
+            </div>
+        }
+    }
+    <div>
+        <label>Taunt</label>
+        <InputGlyph button="Flashlight"/>
+    </div>
+    <div>
+        <label>Secondary Attack</label>
+        <InputGlyph button="Attack2"/>
+    </div>
+</root>

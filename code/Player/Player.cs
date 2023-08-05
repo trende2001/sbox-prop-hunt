@@ -110,7 +110,7 @@ partial class Player : AnimatedEntity
 
 	private void SimulateGameCode( IClient cl )
 	{
-		if ( PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Starting )
+		if ( PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Preparing )
 		{
 			if ( LifeState == LifeState.Dead && TimeSinceLifeStateChanged > 5 && !IsSpectator && Game.IsServer )
 			{
@@ -125,7 +125,7 @@ partial class Player : AnimatedEntity
 	{
 		// TODO: split all player functions into components and add them here
 		
-		if ( !forcespawn && !(PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Starting || PropHuntGame.Current.RoundState == RoundState.None) )
+		if ( !forcespawn && !(PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Preparing || PropHuntGame.Current.RoundState == RoundState.None) )
 		{
 			LifeState = LifeState.Dead;
 			Health = 0;
@@ -155,6 +155,8 @@ partial class Player : AnimatedEntity
 		
 		if ( Game.IsServer ) Components.Add( new SpectatorComponent() );
 		
+		Teams.Get<Spectator>().AddPlayer( this );
+
 		TimeSinceLifeStateChanged = 0;
 	}
 
@@ -283,11 +285,22 @@ partial class Player : AnimatedEntity
 		if ( Game.IsClient ) return;
 		Event.Run( "Player.PreOnKilled", this );
 		LifeState = LifeState.Dead;
+		RemoveViewmodelRPC(To.Single( this ));
+		
 		BecomeRagdoll( LastDamage );
 		
 		PlayerDeathGameCode();
 		
-		RemoveViewmodelRPC(To.Single( this ));
+
+		if ( LastDamage.Attacker is Player attacker )
+		{
+			Sandbox.Services.Stats.Increment( attacker.Client, "props-killed", 1 );
+
+			if ( attacker.Team is Seekers )
+			{
+				attacker.Health = 100;
+			}
+		}
 
 		Inventory.ActiveChild = null;
 		Inventory.ActiveChildInput = null;
@@ -355,8 +368,11 @@ partial class Player : AnimatedEntity
 			}
 		}
 
-		if ( Team is Props && Team is not Spectator)
+		if ( Team is Props )
 		{
+			if ( Team is Spectator )
+				return;
+			
 			if ( Input.Pressed( "use" ) && Game.IsServer )
 			{
 
@@ -365,7 +381,7 @@ partial class Player : AnimatedEntity
 					.Ignore( this )
 					.Run();
 
-				DebugOverlay.TraceResult( tr, 5f );
+				//DebugOverlay.TraceResult( tr, 5f );
 
 
 				if ( tr.Hit && tr.Entity is Prop prop && tr.Body.IsValid() &&
@@ -391,8 +407,7 @@ partial class Player : AnimatedEntity
 					.Ignore( this )
 					.Run();
 
-				DebugOverlay.TraceResult( tr, 5f );
-
+				//DebugOverlay.TraceResult( tr, 5f );
 
 				if ( tr.Hit && tr.Entity.IsValid && tr.Entity is not Player )
 				{
@@ -419,6 +434,8 @@ partial class Player : AnimatedEntity
 					case "Seekers":
 						var sound2 = PlaySound( "random_taunts_seekers" );
 						sound2.SetVolume( 1.9f );
+						break;
+					case "Spectator":
 						break;
 				}
 

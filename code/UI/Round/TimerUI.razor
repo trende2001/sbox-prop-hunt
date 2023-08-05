@@ -59,7 +59,11 @@
 		}
 		else
 		{
-			if (game.RoundState == RoundState.Starting)
+			if (game.RoundState == RoundState.Preparing)
+			{
+				<div class="segtop">Intermission...</div>
+			}
+			else if (game.RoundState == RoundState.Starting)
 			{
 				<div class="segtop">Preparing...</div>
 			}

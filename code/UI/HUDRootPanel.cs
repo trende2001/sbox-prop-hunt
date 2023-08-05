@@ -19,8 +19,11 @@ public class HUDRootPanel : RootPanel
 
 		AddChild<Crosshair>();
 		AddChild<Health>();
+		AddChild<WeaponUI>();
 		AddChild<TimerUI>();
 		AddChild<Blind>();
+		AddChild<KillFeed>();
+		AddChild<InputHints>();
 		AddChild<Scoreboard>();
 		AddChild<Chat>();
 		AddChild<HudHints>();

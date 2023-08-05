@@ -23,10 +23,12 @@ public class Seekers : BaseTeam
 		
 		player.Respawn();
 		
-		player.Inventory.AddItem( new Pistol() );
 		player.Inventory.AddItem( new MP5() );
+		player.Inventory.AddItem( new Pistol() );
 
-		player.Ammo.GiveAmmo( AmmoType.Pistol, 90 );
+		player.Ammo.GiveAmmo( AmmoType.Pistol, 55);
+		player.Ammo.GiveAmmo( AmmoType.SMG, 100 );
+		player.Ammo.GiveAmmo( AmmoType.Buckshot, 1 );
 		
 		player.Tags.Add( "seeker" );
 	}

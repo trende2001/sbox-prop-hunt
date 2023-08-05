@@ -1,18 +1,24 @@
 ﻿using Sandbox;
+using System;
+
 namespace MyGame;
-public class Grenade : Throwable
+public class Grenade : Prop
 {
-	public override Model ViewModel => Cloud.Model( "https://asset.party/facepunch/v_usp" );
-	public override Model WorldModel => Cloud.Model( "https://asset.party/facepunch/w_usp" );
-	public override void Throw()
+	public override void Spawn()
 	{
-		if ( Game.IsServer )
-		{
-			var Nade = new ModelEntity();
-			Nade.Model = WorldModel;
-			Nade.SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
-			Nade.Position = Owner.AimRay.Position + (Owner.AimRay.Forward * 40);
-			Nade.PhysicsBody.Velocity = (Owner.AimRay.Forward * 500) + (Owner.AimRay.Forward.EulerAngles.ToRotation().Up * 200);
-		}
+		base.Spawn();
+
+		Model = Cloud.Model("https://asset.party/mapperskai/weapon_f1");
+		SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
+		
+		Tags.Add( "grenade" );
+	}
+
+	public override void Touch( Entity other )
+	{
+		base.Touch( other );
+		
+		PropHuntGame.Explosion( this, Owner, this.Position, 200f, 120f, 100f );
+		Delete();
 	}
 }

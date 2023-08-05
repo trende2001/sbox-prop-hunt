@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using Sandbox;
 
@@ -22,14 +23,21 @@ public partial class PropHuntGame : GameManager {
 		Help = "The number of seconds to spend in the Preparing phase before the round starts. This is automatically multiplied by 1.5 on the first round of a map to allow all players to join. The default is 30 seconds.",
 		Saved = true
 	)]
-	public static int PreRoundTime { get; set; } = 30;
+	public static int PreRoundTime { get; set; } = 15;
+	
+	[ConVar.Replicated(
+		"ph_mp_preparingtime",
+		Help = "The number of seconds to spend in the Preparing phase before the round starts. This is automatically multiplied by 1.5 on the first round of a map to allow all players to join. The default is 30 seconds.",
+		Saved = true
+	)]
+	public static int PreparingRoundTime { get; set; } = 30;
 
 	[ConVar.Replicated(
 		"ph_mp_roundtime",
 		Help = "The base number of seconds a round should go on, before any Haste Mode adjustments. The default is 360 seconds (6 minutes).",
 		Saved = true
 	)]
-	public static int RoundTime { get; set; } = 3 * 60;
+	public static int RoundTime { get; set; } = 5 * 60;
 
 	[ConVar.Replicated(
 		"ph_mp_postroundtime",
@@ -50,7 +58,9 @@ public partial class PropHuntGame : GameManager {
 	{
 		if ( RoundState == RoundState.None )
 			RoundState = RoundState.WaitingForPlayers;
-		if ( RoundState == RoundState.WaitingForPlayers && (Game.Clients.Count > 1) )
+		if ( RoundState == RoundState.WaitingForPlayers && (Game.Clients.Count( i => i != null && i.IsValid && !((Player)i.Pawn).IsSpectator ) > 2 ) )
+			OnRoundPreparingPhase();
+		if ( RoundState == RoundState.Preparing && TimeSinceRoundStateChanged > RoundLength ) 
 			OnRoundStarting();
 		if ( RoundState == RoundState.Starting && TimeSinceRoundStateChanged > RoundLength )
 			OnRoundStart();
@@ -66,12 +76,30 @@ public partial class PropHuntGame : GameManager {
 
 	}
 
+	public virtual void OnRoundPreparingPhase()
+	{
+		RoundState = RoundState.Preparing;
+		
+		TimeSinceRoundStateChanged = 0;
+		RoundLength = PreRoundTime;
+		
+		foreach ( var player in Entity.All.OfType<Player>().ToList() )
+		{
+			player.Health = 100;
+
+			if ( player.LifeState != LifeState.Alive )
+			{
+				player.Respawn();
+			}
+		}
+	}
+
 	public virtual void OnRoundStarting()
 	{
 		RoundState = RoundState.Starting;
 
 		TimeSinceRoundStateChanged = 0;
-		RoundLength = PreRoundTime;
+		RoundLength = PreparingRoundTime;
 		
 		foreach ( var player in Entity.All.OfType<Player>().ToList() )
 		{
@@ -97,7 +125,7 @@ public partial class PropHuntGame : GameManager {
 		TimeSinceRoundStateChanged = 0;
 		RoundLength = RoundTime;
 		
-		Sound.FromScreen( To.Everyone, "seekers.unleashed.vo" );
+		Sound.FromScreen( To.Everyone, "seeker.unleashed.vo" );
 
 		Decal.Clear( To.Everyone, true, true );
 	}
@@ -210,5 +238,57 @@ public partial class PropHuntGame : GameManager {
 
 		RoundNumber++;
 		ResetRound();
+	}
+	
+	public static void Explosion( Entity weapon, Entity owner, Vector3 position, float radius, float damage, float forceScale )
+	{
+		// Effects
+		Sound.FromWorld( "rust_pumpshotgun.shootdouble", position );
+		Particles.Create( "particles/explosion/barrel_explosion/explosion_barrel.vpcf", position );
+
+		// Damage, etc
+		var overlaps = Entity.FindInSphere( position, radius );
+
+		foreach ( var overlap in overlaps )
+		{
+			if ( overlap is not ModelEntity ent || !ent.IsValid() )
+				continue;
+
+			if ( ent.LifeState != LifeState.Alive )
+				continue;
+
+			if ( !ent.PhysicsBody.IsValid() )
+				continue;
+
+			if ( ent.IsWorld )
+				continue;
+
+			var targetPos = ent.PhysicsBody.MassCenter;
+
+			var dist = Vector3.DistanceBetween( position, targetPos );
+			if ( dist > radius )
+				continue;
+
+			var tr = Trace.Ray( position, targetPos )
+				.Ignore( weapon )
+				.WorldOnly()
+				.Run();
+
+			if ( tr.Fraction < 0.98f )
+				continue;
+
+			var distanceMul = 1.0f - Math.Clamp( dist / radius, 0.0f, 1.0f );
+			var dmg = damage * distanceMul;
+			var force = (forceScale * distanceMul) * ent.PhysicsBody.Mass;
+			var forceDir = (targetPos - position).Normal;
+
+			var damageInfo = DamageInfo.FromExplosion( position, forceDir * force, dmg )
+				.WithWeapon( weapon )
+				.WithAttacker( owner );
+
+			ent.TakeDamage( damageInfo );
+
+			
+		}
 	}
 }

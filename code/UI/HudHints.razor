@@ -48,7 +48,7 @@
             }
         }
         
-            .reload {
+        .reload {
                 position: absolute;
                 height: 12px;
                 opacity: 0;
@@ -66,7 +66,20 @@
                 top: 75%;
                 margin-top: -12px;
                 margin-left: 40px;
-            }
+        }
+            
+        .currentspec {
+                        position: absolute;
+                        height: 15px;
+                        transition: all 0.1s ease;
+                        transform-origin: 0% 0%;
+                        transform: scaleX( 1 );
+
+                        left: 1.2%;
+                        top: 80%;
+                        margin-top: 0px;
+                        margin-left: 40px;
+        }
     }
 </style>
 
@@ -75,12 +88,12 @@
     	{ 
     		if (ply.Components.TryGet<SpectatorComponent>(out var cmp) && cmp.CurrentlySpectating is Player specply && cmp.SpectateMode == SpectatingMode.SpectatePlayer)
     		{
-    			<div class="reload" @ref="CurrentPlayerSpectated">@specply.Client.Name</div>
+    			<div class="currentspec" @ref="CurrentPlayerSpectated">@specply.Client.Name</div>
     		}
     		else
     		if (ply.TeamName is string team)
     		{
-    			<div class="reload" @ref="CurrentPlayerSpectated">@team</div>
+    			<div class="currentspec" @ref="CurrentPlayerSpectated">@team</div>
     		}
 	    }
 	
@@ -145,7 +158,6 @@
 
 		LastObserved = isUsable ? tr.Entity : null;
 		PickupHint.SetClass( "show", isUsable );
-	    PickupAdvice.SetClass( "show", isUsable && player?.Team is Props );
 	    
 	    //CurrentPlayerSpectated.SetClass("show", player?.Team is Spectator);
 	    
