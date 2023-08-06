@@ -8,7 +8,8 @@ public partial class UseComponent : SimulatedComponent
 	/// Entity the player is currently using via their interaction key.
 	/// </summary>
 	public Entity Using { get; protected set; }
-
+	
+	
 	/// <summary>
 	/// This should be called somewhere in your player's tick to allow them to use entities
 	/// </summary>
@@ -119,4 +120,6 @@ public partial class UseComponent : SimulatedComponent
 
 		return ent;
 	}
+	
+
 }

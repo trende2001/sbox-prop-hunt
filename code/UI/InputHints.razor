@@ -36,24 +36,22 @@
 <root>
     @if ((Game.LocalPawn is Player player))
     {
-        @if (player.TeamName == "Props")
-        {
-            <div>
-                <label>Turn into Prop</label>
-                <InputGlyph button="use"/>
-            </div>
-            <div>
-                <label>Lock Rotation</label>
-                <InputGlyph button="Attack1"/>
-            </div>
-        }
+        <div>
+            <label>Turn into Prop / Interact</label>
+            <InputGlyph button="use"/>
+        </div>
+        <div>
+            <label>Lock Rotation</label>
+            <InputGlyph button="Attack1"/>
+        </div>
+        <div>
+            <label>Taunt</label>
+            <InputGlyph button="Flashlight"/>
+        </div>
+
+        <div>
+            <label>Secondary Attack</label>
+            <InputGlyph button="Attack2"/>
+        </div>
     }
-    <div>
-        <label>Taunt</label>
-        <InputGlyph button="Flashlight"/>
-    </div>
-    <div>
-        <label>Secondary Attack</label>
-        <InputGlyph button="Attack2"/>
-    </div>
 </root>

@@ -28,7 +28,7 @@ public class Seekers : BaseTeam
 
 		player.Ammo.GiveAmmo( AmmoType.Pistol, 55);
 		player.Ammo.GiveAmmo( AmmoType.SMG, 100 );
-		player.Ammo.GiveAmmo( AmmoType.Buckshot, 1 );
+		player.Ammo.GiveAmmo( AmmoType.Buckshot, 3 );
 		
 		player.Tags.Add( "seeker" );
 	}

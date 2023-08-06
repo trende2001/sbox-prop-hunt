@@ -103,6 +103,7 @@ public partial class PropHuntGame
 
 		(PropHuntGame.Current as PropHuntGame).RoundState = RoundState.None;
 		(PropHuntGame.Current as PropHuntGame).TimeSinceRoundStateChanged = 0;
+		
 
 		HUDEntity.Current.Delete();
 		_ = new HUDEntity();

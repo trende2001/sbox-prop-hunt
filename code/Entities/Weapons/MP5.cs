@@ -7,13 +7,12 @@ public class MP5 : Gun
 	public override Model ViewModel => Cloud.Model( "https://asset.party/facepunch/v_mp5" );
 	public override Model WorldModel => Cloud.Model( "https://asset.party/facepunch/w_mp5" );
 	public override float PrimaryAttackDelay => 0.09f;
-	public override float SecondaryAttackDelay => 0.1f;
+	public override float SecondaryAttackDelay => 100f;
 
 	public override float SecondaryReloadDelay => 0.1f;
 	public override float PrimaryReloadDelay => 3.0f;
 	public override int MaxPrimaryAmmo => 25;
-	public override int MaxSecondaryAmmo => 3;
-	
+
 	public override AmmoType PrimaryAmmoType => AmmoType.SMG;
 	public override AmmoType SecondaryAmmoType => AmmoType.Buckshot;
 	
@@ -42,19 +41,24 @@ public class MP5 : Gun
 	{
 		SecondaryAmmo -= 1;
 
+
 		var aim = Owner.AimRay;
 		
-		Log.Error( "we are secondary attacking" );
-		
 		TimeSinceSecondaryAttack = 1.25f;
-		
-		var grenade = new Grenade()
-		{
-			Position = aim.Position + aim.Forward * 3.0f,
-			Owner = Owner,
-		};
 
-		grenade.PhysicsBody.Velocity = aim.Forward * 600.0f + Owner.Rotation.Up * 200.0f + Owner.Velocity;
+		if ( Game.IsServer )
+		{
+			using ( Prediction.Off() )
+			{
+				var grenade = new Grenade
+				{
+					Position = aim.Position + aim.Forward * 3.0f,
+					Owner = Owner,
+				};
+
+				grenade.PhysicsBody.Velocity = aim.Forward * 600.0f + Owner.Rotation.Up * 200.0f + Owner.Velocity;
+			}
+		}
 	}
 	
 	public override void ReloadPrimary()

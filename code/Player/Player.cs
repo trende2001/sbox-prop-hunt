@@ -38,7 +38,7 @@ partial class Player : AnimatedEntity
 	
 	public bool IsSpectator
 	{
-		get => Client.GetValue<bool>( "spectator", false ) || (PropHuntGame.Current.RoundState == RoundState.Started && TeamName == "Spectator");
+		get => Client.GetValue<bool>( "spectator", false ) || (PropHuntGame.Current.RoundState == RoundState.Starting && TeamName == "Spectator");
 		set => Client.SetValue( "spectator", value );
 	}
 
@@ -101,7 +101,7 @@ partial class Player : AnimatedEntity
 				Teams.Get<Spectator>().AddPlayer( this );
 			}
 
-			if ( PropHuntGame.Current.RoundState < RoundState.Started && !IsSpectator && TeamName == "Spectator" )
+			if ( PropHuntGame.Current.RoundState < RoundState.Starting && !IsSpectator && TeamName == "Spectator" )
 			{
 				Teams.Get<Spectator>().RemovePlayer( this );
 			}
@@ -125,7 +125,7 @@ partial class Player : AnimatedEntity
 	{
 		// TODO: split all player functions into components and add them here
 		
-		if ( !forcespawn && !(PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Preparing || PropHuntGame.Current.RoundState == RoundState.None) )
+		if ( !forcespawn && !(PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Starting || PropHuntGame.Current.RoundState == RoundState.None) )
 		{
 			LifeState = LifeState.Dead;
 			Health = 0;
@@ -155,7 +155,7 @@ partial class Player : AnimatedEntity
 		
 		if ( Game.IsServer ) Components.Add( new SpectatorComponent() );
 		
-		Teams.Get<Spectator>().AddPlayer( this );
+		//Teams.Get<Spectator>().AddPlayer( this );
 
 		TimeSinceLifeStateChanged = 0;
 	}
@@ -370,9 +370,6 @@ partial class Player : AnimatedEntity
 
 		if ( Team is Props )
 		{
-			if ( Team is Spectator )
-				return;
-			
 			if ( Input.Pressed( "use" ) && Game.IsServer )
 			{
 
@@ -510,7 +507,7 @@ partial class Player : AnimatedEntity
 		// Does the prop have any children?
 		if ( prop.Children.Any() && Game.IsServer )
 		{
-			Log.Error( $"This prop has {prop.Children.Count()} children." );
+			//Log.Error( $"This prop has {prop.Children.Count()} children." );
 
 			
 			// THERE HAS TO BE A BETTER WAY TO DO THIS.

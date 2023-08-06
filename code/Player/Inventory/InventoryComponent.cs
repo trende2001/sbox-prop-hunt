@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace MyGame;
 public partial class InventoryComponent : SimulatedComponent, ISingletonComponent
 {
-	[Net, Predicted] public Entity ActiveChild { get; set; }
+	[Net] public Entity ActiveChild { get; set; }
 	[ClientInput] public Entity ActiveChildInput { get; set; }
 	[Net] public List<Entity> Items { get; set; } = new();
 	public static int MaxItems { get; set; } = 32;
@@ -111,14 +111,14 @@ public partial class InventoryComponent : SimulatedComponent, ISingletonComponen
 
 		// drop weapons
 
-		if ( Input.Pressed( "Drop" ) && ActiveChild != null )
+		/*if ( Input.Pressed( "Drop" ) && ActiveChild != null )
 		{
 			var item = ActiveChild;
 			DropItem( item );
 			item.Velocity = Entity.AimRay.Forward * 200;
 			item.Position = Entity.AimRay.Position + Entity.AimRay.Forward * 48;
 			item.EnableDrawing = true;
-		}
+		}*/
 
 		if ( ActiveChildInput.IsValid() && ActiveChildInput.Owner == Entity )
 		{

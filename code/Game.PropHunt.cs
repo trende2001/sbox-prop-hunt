@@ -82,16 +82,6 @@ public partial class PropHuntGame : GameManager {
 		
 		TimeSinceRoundStateChanged = 0;
 		RoundLength = PreRoundTime;
-		
-		foreach ( var player in Entity.All.OfType<Player>().ToList() )
-		{
-			player.Health = 100;
-
-			if ( player.LifeState != LifeState.Alive )
-			{
-				player.Respawn();
-			}
-		}
 	}
 
 	public virtual void OnRoundStarting()
@@ -141,23 +131,20 @@ public partial class PropHuntGame : GameManager {
 
 		foreach ( var team in Teams.RegisteredTeams )
 		{
-			var plys = Entity.All.OfType<Player>()
-				.Where( x => x.LifeState == LifeState.Alive && x.Team == null )
-				.OrderBy( x => Game.Random.Int( 0, 64 ) ).ToList();
-			var playercount = All.OfType<Player>()
-				.Count( x => x.LifeState == LifeState.Alive );
+			var plys = Entity.All.OfType<Player>().Where( x => !x.IsSpectator && x.LifeState == LifeState.Alive && x.Team == null ).OrderBy( x => Game.Random.Int( 0, 1000 ) ).ToList();
+			var playerCount = Entity.All.OfType<Player>().Where( x => !x.IsSpectator && x.LifeState == LifeState.Alive ).Count();
 
 			if ( team is Props || team is Spectator ) continue;
 			
 			Log.Info( $"Assigning to team {team.TeamName}" );
 
 			var amountToAdd =
-				(playercount * team.TeamPlayerPercentage).FloorToInt()
+				(playerCount * team.TeamPlayerPercentage).FloorToInt()
 				.Clamp( team.TeamPlayerMinimum, team.TeamPlayerMaximum ) - team.Players.Count();
 
 			if ( amountToAdd == 0 )
 			{
-				var x = (playercount * team.TeamPlayerPercentage).FloorToInt().Clamp( team.TeamPlayerMinimum, team.TeamPlayerMaximum );
+				var x = (playerCount * team.TeamPlayerPercentage).FloorToInt().Clamp( team.TeamPlayerMinimum, team.TeamPlayerMaximum );
 				Log.Info( $"Skipping assigning to team because we already have {team.Players.Count}/{x} players" );
 				continue;
 			}

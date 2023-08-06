@@ -2,23 +2,38 @@
 using System;
 
 namespace MyGame;
-public class Grenade : Prop
+public class Grenade : BasePhysics
 {
+	public static readonly Model WorldModel = Cloud.Model( "https://asset.party/mapperskai/weapon_f1" );
+
 	public override void Spawn()
 	{
 		base.Spawn();
-
-		Model = Cloud.Model("https://asset.party/mapperskai/weapon_f1");
+		
+		Model = WorldModel;
 		SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
 		
 		Tags.Add( "grenade" );
 	}
 
-	public override void Touch( Entity other )
+	[GameEvent.Tick.Server]
+	public void Simulate()
 	{
-		base.Touch( other );
+		var trace = Trace.Ray( Position, Position )
+			.Size( 24 )
+			.Ignore( this )
+			.Ignore( Owner )
+			.Run();
+
+		Position = trace.EndPosition;
 		
-		PropHuntGame.Explosion( this, Owner, this.Position, 200f, 120f, 100f );
+		if (trace.Hit)
+			BlowUp();
+	}
+
+	public void BlowUp()
+	{
+		PropHuntGame.Explosion( this, Owner, this.Position, 200f, 120f, 60f );
 		Delete();
 	}
 }

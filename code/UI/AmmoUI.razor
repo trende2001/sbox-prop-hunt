@@ -16,13 +16,22 @@
 		font-family: Poppins;
 		color: white;
 	}
+	
+	.altammonumber {
+		font-size: 60px;
+		font-weight: 600px;
+		background-color: transparent;
+		font-family: Poppins;
+		color: yellow;
+	}
 </style>
 
 <root class="ammo">
 	@if ((Game.LocalPawn is Player ply) && ply.Inventory.ActiveChild is Weapon wpn ) {
 		<div class="number">@wpn.PrimaryAmmo</div>
 		<label class="number">/</label>
-		<div class="number">@ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div> 
+		<div class="number">@ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div>
+		<div class="altammonumber">@ply.Ammo.AmmoCount(wpn.SecondaryAmmoType)</div> 
 	}  
 </root> 
 
