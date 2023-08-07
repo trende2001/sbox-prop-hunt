@@ -370,21 +370,14 @@ partial class Player : AnimatedEntity
 
 		if ( Team is Props )
 		{
-			if ( Input.Pressed( "use" ) && Game.IsServer )
+			if ( Input.Pressed( "use" ) && Game.IsClient )
 			{
-
-				var tr = Trace.Ray( Camera.Position, Camera.Position + EyeRotation.Forward * 115f )
-					.UseHitboxes( true )
-					.Ignore( this )
-					.Run();
-
 				//DebugOverlay.TraceResult( tr, 5f );
+				var proptr = PropTrace( this );
 
-
-				if ( tr.Hit && tr.Entity is Prop prop && tr.Body.IsValid() &&
-				     tr.Body.BodyType == PhysicsBodyType.Dynamic )
+				if ( proptr.Entity is Prop ent )
 				{
-					ChangeIntoProp( prop );
+					ConsoleSystem.Run( "changeprop " + ent.GetModelName() );
 					Sound.FromEntity( To.Single( this ), "player_use", this );
 				}
 			}
@@ -464,42 +457,67 @@ partial class Player : AnimatedEntity
 		}
 	}
 
-	private void ChangeIntoProp( Prop prop )
+	public static TraceResult PropTrace(Player ply)
 	{
-		SetModel( prop.GetModelName() );
-		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, prop.CollisionBounds.Mins, prop.CollisionBounds.Maxs );
+		var tr = Trace.Ray( ply.Position, Camera.Position + ply.EyeRotation.Forward * 115f )
+			.UseHitboxes( true )
+			.Ignore( ply )
+			.Run();
+
+		return tr;
+	}
+
+	[ConCmd.Server("changeprop")]
+	public static void ServerChangeIntoProp(string modelname)
+	{
+		if ( ConsoleSystem.Caller.Pawn is Player ply )
+		{
+			ChangeIntoProp( ply, modelname, PropTrace(ply) );
+		}
+	}
+
+	private static void ChangeIntoProp( Player ply, string desiredModel, TraceResult tr )
+	{
+		if ( tr.Hit && tr.Entity is Prop prop && tr.Body.IsValid() &&
+		     tr.Body.BodyType == PhysicsBodyType.Dynamic )
+		{
+			if ( prop.GetModelName() != desiredModel )
+				return;
+			
+			ply.SetModel( prop.GetModelName() );
+			ply.SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, prop.CollisionBounds.Mins, prop.CollisionBounds.Maxs );
 		
-		EnableHitboxes = true;
+			ply.EnableHitboxes = true;
 
-		Scale = prop.Scale;
-		RenderColor = prop.RenderColor;
-		CollisionBounds = prop.CollisionBounds; 
-		HitboxSet = prop.HitboxSet;
+			ply.Scale = prop.Scale;
+			ply.RenderColor = prop.RenderColor;
+			ply.CollisionBounds = prop.CollisionBounds; 
+			ply.HitboxSet = prop.HitboxSet;
 		
-		SetMaterialGroup( prop.GetMaterialGroup() );
+			ply.SetMaterialGroup( prop.GetMaterialGroup() );
 
-		Components.Add( new PropController() );
-		Components.Add( new PropAnimator() );
-		Components.Remove( new CitizenAnimationComponent() );
+			ply.Components.Add( new PropController() );
+			ply.Components.Add( new PropAnimator() );
+			ply.Components.Remove( new CitizenAnimationComponent() );
 
-		Clothing.ClearEntities();
+			ply.Clothing.ClearEntities();
 
 		// Calculate the health based on the volume that the chosen model encompasses.
 		// Clamp our current health and maximum health between 0 and 1, so we can't go over the imposed limit.
 		// Bring our prop collison volume to the power of 0.5 (y) then multiply it by 0.5
 
-		float multiplier = Math.Clamp( Health / MaxHealth, 0, 1 );
+		float multiplier = Math.Clamp( ply.Health / ply.MaxHealth, 0, 1 );
 		float health = (float)Math.Pow( prop.CollisionBounds.Volume, 0.5f ) * 0.5f;
 
 		health = (float)Math.Round( health / 5 ) * 5;
-		MaxHealth = health;
-		Health = health * multiplier;
+		ply.MaxHealth = health;
+		ply.Health = health * multiplier;
 
-		if( Children.Any() )
+		if( ply.Children.Any() )
 		{
-			for ( int i = 0; i < Children.Count; i++ )
+			for ( int i = 0; i < ply.Children.Count; i++ )
 			{
-				Children[i].Delete();
+				ply.Children[i].Delete();
 			}
 		}
 
@@ -516,10 +534,10 @@ partial class Player : AnimatedEntity
 				if ( child is PointLightEntity ChildPointLight )
 				{
 					var LightEntity = new PointLightEntity();
-						LightEntity.Parent = this;
+						LightEntity.Parent = ply;
 						LightEntity.LocalPosition = ChildPointLight.LocalPosition;
 						LightEntity.LocalRotation = ChildPointLight.LocalRotation;
-						LightEntity.Position = this.Position;
+						LightEntity.Position = ply.Position;
 						LightEntity.Predictable = true;
 							
 						LightEntity.Brightness = ChildPointLight.Brightness;
@@ -536,8 +554,8 @@ partial class Player : AnimatedEntity
 				{
 					var LightEntity = new SpotLightEntity();
 					
-						LightEntity.Parent = this;
-						LightEntity.Position = this.Position;
+						LightEntity.Parent = ply;
+						LightEntity.Position = ply.Position;
 						LightEntity.LocalPosition = ChildSpotLight.LocalPosition;
 						LightEntity.LocalRotation = ChildSpotLight.LocalRotation;
 						LightEntity.Predictable = true;
@@ -556,6 +574,7 @@ partial class Player : AnimatedEntity
 					
 				}
 			}
+		}
 		}
 	}
 

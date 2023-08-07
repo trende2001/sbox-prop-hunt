@@ -65,7 +65,7 @@ public partial class Gun : Weapon
 					tr.Entity.TakeDamage( DamageInfo.FromBullet( tr.HitPosition, forward * force, damage ).WithWeapon( this ).WithAttacker( Owner ).WithTag( "propplayer" ) );
 				}
 
-				if ( !tr.Entity.Tags.Has( "propplayer" ) )
+				if ( !tr.Entity.Tags.Has( "propplayer" ) && tr.Entity.Tags.Has( "prop" ) )
 				{
 					Owner.TakeDamage( DamageInfo.Generic( 5f ) );
 				}
