@@ -370,6 +370,7 @@ partial class Player : AnimatedEntity
 
 		if ( Team is Props )
 		{
+			//
 			if ( Input.Pressed( "use" ) && Game.IsClient )
 			{
 				//DebugOverlay.TraceResult( tr, 5f );
@@ -377,7 +378,7 @@ partial class Player : AnimatedEntity
 
 				if ( proptr.Entity is Prop ent )
 				{
-					ConsoleSystem.Run( "changeprop " + ent.GetModelName() );
+					ServerChangeIntoProp( ent.GetModelName() );
 					Sound.FromEntity( To.Single( this ), "player_use", this );
 				}
 			}
@@ -459,7 +460,7 @@ partial class Player : AnimatedEntity
 
 	public static TraceResult PropTrace(Player ply)
 	{
-		var tr = Trace.Ray( ply.Position, Camera.Position + ply.EyeRotation.Forward * 115f )
+		var tr = Trace.Ray( Camera.Position, Camera.Position + ply.EyeRotation.Forward * 115f )
 			.UseHitboxes( true )
 			.Ignore( ply )
 			.Run();
@@ -475,8 +476,8 @@ partial class Player : AnimatedEntity
 			ChangeIntoProp( ply, modelname, PropTrace(ply) );
 		}
 	}
-
-	private static void ChangeIntoProp( Player ply, string desiredModel, TraceResult tr )
+	
+	public static void ChangeIntoProp( Player ply, string desiredModel, TraceResult tr )
 	{
 		if ( tr.Hit && tr.Entity is Prop prop && tr.Body.IsValid() &&
 		     tr.Body.BodyType == PhysicsBodyType.Dynamic )
