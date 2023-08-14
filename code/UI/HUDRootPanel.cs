@@ -26,6 +26,8 @@ public class HUDRootPanel : RootPanel
 		AddChild<InputHints>();
 		AddChild<Scoreboard>();
 		AddChild<Chat>();
+		AddChild<VoiceList>();
+		AddChild<VoiceSpeaker>();
 		AddChild<HudHints>();
 		AddChild<AmmoUI>();
 		AddChild<PopupList>();

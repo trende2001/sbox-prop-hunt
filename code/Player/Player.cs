@@ -101,7 +101,7 @@ partial class Player : AnimatedEntity
 				Teams.Get<Spectator>().AddPlayer( this );
 			}
 
-			if ( PropHuntGame.Current.RoundState < RoundState.Starting && !IsSpectator && TeamName == "Spectator" )
+			if ( PropHuntGame.Current.RoundState < RoundState.Preparing && !IsSpectator && TeamName == "Spectator" )
 			{
 				Teams.Get<Spectator>().RemovePlayer( this );
 			}
@@ -125,7 +125,7 @@ partial class Player : AnimatedEntity
 	{
 		// TODO: split all player functions into components and add them here
 		
-		if ( !forcespawn && !(PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Starting || PropHuntGame.Current.RoundState == RoundState.None) )
+		if ( !forcespawn && !(PropHuntGame.Current.RoundState == RoundState.WaitingForPlayers || PropHuntGame.Current.RoundState == RoundState.Preparing || PropHuntGame.Current.RoundState == RoundState.None) )
 		{
 			LifeState = LifeState.Dead;
 			Health = 0;
@@ -154,6 +154,7 @@ partial class Player : AnimatedEntity
 		Input.ReleaseAction( "Attack2" );
 		
 		if ( Game.IsServer ) Components.Add( new SpectatorComponent() );
+		
 		
 		//Teams.Get<Spectator>().AddPlayer( this );
 
@@ -374,11 +375,11 @@ partial class Player : AnimatedEntity
 			if ( Input.Pressed( "use" ) && Game.IsClient )
 			{
 				//DebugOverlay.TraceResult( tr, 5f );
-				var proptr = PropTrace( this );
+				var proptr = PropTrace( this, Camera.Position );
 
 				if ( proptr.Entity is Prop ent )
 				{
-					ServerChangeIntoProp( ent.GetModelName() );
+					ServerChangeIntoProp( Camera.Position, ent.GetModelName() );
 					Sound.FromEntity( To.Single( this ), "player_use", this );
 				}
 			}
@@ -458,9 +459,9 @@ partial class Player : AnimatedEntity
 		}
 	}
 
-	public static TraceResult PropTrace(Player ply)
+	public static TraceResult PropTrace(Player ply, Vector3 camerapos)
 	{
-		var tr = Trace.Ray( Camera.Position, Camera.Position + ply.EyeRotation.Forward * 115f )
+		var tr = Trace.Ray( camerapos, camerapos + ply.EyeRotation.Forward * 115f )
 			.UseHitboxes( true )
 			.Ignore( ply )
 			.Run();
@@ -469,11 +470,11 @@ partial class Player : AnimatedEntity
 	}
 
 	[ConCmd.Server("changeprop")]
-	public static void ServerChangeIntoProp(string modelname)
+	public static void ServerChangeIntoProp(Vector3 camerapos, string modelname)
 	{
-		if ( ConsoleSystem.Caller.Pawn is Player ply )
+		if ( ConsoleSystem.Caller?.Pawn is Player ply )
 		{
-			ChangeIntoProp( ply, modelname, PropTrace(ply) );
+			ChangeIntoProp( ply, modelname, PropTrace(ply, camerapos) );
 		}
 	}
 	
@@ -484,6 +485,8 @@ partial class Player : AnimatedEntity
 		{
 			if ( prop.GetModelName() != desiredModel )
 				return;
+			
+			ply.Tags.Add( "propplayer" );
 			
 			ply.SetModel( prop.GetModelName() );
 			ply.SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, prop.CollisionBounds.Mins, prop.CollisionBounds.Maxs );

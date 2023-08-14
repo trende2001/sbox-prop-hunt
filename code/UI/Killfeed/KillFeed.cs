@@ -4,7 +4,7 @@ using Sandbox.UI.Construct;
 using System;
 using System.Threading.Tasks;
 
-namespace Sandbox.UI
+namespace MyGame
 {
 	public partial class KillFeed : Panel
 	{

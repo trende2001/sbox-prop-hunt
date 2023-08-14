@@ -23,7 +23,7 @@ public partial class PropHuntGame : GameManager {
 		Help = "The number of seconds to spend in the Preparing phase before the round starts. This is automatically multiplied by 1.5 on the first round of a map to allow all players to join. The default is 30 seconds.",
 		Saved = true
 	)]
-	public static int PreRoundTime { get; set; } = 15;
+	public static int PreRoundTime { get; set; } = 30;
 	
 	[ConVar.Replicated(
 		"ph_mp_preparingtime",
@@ -178,6 +178,7 @@ public partial class PropHuntGame : GameManager {
 		{
 			OnTeamWin( Teams.Get<Props>() );
 		}
+		
 
 		return;
 	}

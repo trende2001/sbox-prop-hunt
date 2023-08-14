@@ -21,8 +21,6 @@ public class Seekers : BaseTeam
 	{
 		base.AddPlayer( player );
 		
-		player.Respawn();
-		
 		player.Inventory.AddItem( new MP5() );
 		player.Inventory.AddItem( new Pistol() );
 		player.Inventory.AddItem( new PropInteractor() );
