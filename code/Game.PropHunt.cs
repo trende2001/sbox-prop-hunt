@@ -51,6 +51,12 @@ public partial class PropHuntGame : GameManager {
 		Help = "Debug: prevent all teams from winning, even if they meet their win conditions."
 	)]
 	public static bool PreventWin { get; set; } = false;
+	
+	[ConVar.Replicated( 
+		"ph_enabledevcam",
+		Help = "Enable devcam for developer purposes."
+	)] 
+	public static bool EnableDevCam { get; set; } = false;
 
 
 	[GameEvent.Tick.Server]

@@ -63,4 +63,24 @@ public partial class PropHuntGame : GameManager
 	{
 		KillFeed.Current?.AddEntry( leftid, left, rightid, right, method );
 	}
+	
+	public override void DoPlayerDevCam( IClient client )
+	{
+		Game.AssertServer();
+
+		var camera = client.Components.Get<DevCamera>( false );
+
+		if ( camera == null && EnableDevCam )
+		{
+			camera = new DevCamera();
+			client.Components.Add( camera );
+			return;
+		}
+
+		if ( EnableDevCam )
+		{
+			camera.Enabled = !camera.Enabled;
+		}
+	}
+
 }
