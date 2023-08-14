@@ -485,7 +485,14 @@ partial class Player : AnimatedEntity
 		{
 			if ( prop.GetModelName() != desiredModel )
 				return;
-			
+
+			if ( prop.Tags.Has( "preventprops" ) )
+			{
+				PopupSystem.DisplayPopup( To.Single( ply ), "You cannot turn into this prop" );
+				return;
+			}
+
+			// Doing it twice to make sure.
 			ply.Tags.Add( "propplayer" );
 			
 			ply.SetModel( prop.GetModelName() );
