@@ -155,8 +155,8 @@ partial class Player : AnimatedEntity
 		
 		if ( Game.IsServer ) Components.Add( new SpectatorComponent() );
 		
-		
-		//Teams.Get<Spectator>().AddPlayer( this );
+		Team?.RemovePlayer( this );
+		Teams.Get<Spectator>().AddPlayer( this );
 
 		TimeSinceLifeStateChanged = 0;
 	}
