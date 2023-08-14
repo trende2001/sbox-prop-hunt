@@ -46,6 +46,13 @@ public partial class PropHuntGame : GameManager {
 	)]
 	public static int PostRoundTime { get; set; } = 15;
 	
+	[ConVar.Replicated(
+		"ph_maxplayerstostart",
+		Help = "Max amount of players to start the round.",
+		Saved = true
+	)]
+	public static int MaxPlayersToStart { get; set; } = 2;
+	
 	[ConVar.Server(
 		"ph_debug_preventwin",
 		Help = "Debug: prevent all teams from winning, even if they meet their win conditions."
@@ -64,7 +71,7 @@ public partial class PropHuntGame : GameManager {
 	{
 		if ( RoundState == RoundState.None )
 			RoundState = RoundState.WaitingForPlayers;
-		if ( RoundState == RoundState.WaitingForPlayers && (Game.Clients.Count( i => i != null && i.IsValid && !((Player)i.Pawn).IsSpectator ) > 2 ) )
+		if ( RoundState == RoundState.WaitingForPlayers && (Game.Clients.Count( i => i != null && i.IsValid && !((Player)i.Pawn).IsSpectator ) > MaxPlayersToStart ) )
 			OnRoundPreparingPhase();
 		if ( RoundState == RoundState.Preparing && TimeSinceRoundStateChanged > RoundLength ) 
 			OnRoundStarting();
