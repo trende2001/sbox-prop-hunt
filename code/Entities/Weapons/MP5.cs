@@ -23,7 +23,7 @@ public class MP5 : Gun
 	public override void PrimaryAttack()
 	{
 		PrimaryAmmo -= 1;
-		ShootBullet( 12, 0.09f );
+		ShootBullet( 24, 0.09f );
 		PlaySound( "mp5_fire" );
 		(Owner as AnimatedEntity)?.SetAnimParameter( "b_attack", true );
 		ViewModelEntity?.SetAnimParameter( "b_attack", true );
