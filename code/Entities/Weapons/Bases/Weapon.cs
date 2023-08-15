@@ -11,6 +11,8 @@ public partial class Weapon : Carriable
 	public virtual float SecondaryReloadDelay => 0.0f;
 	public virtual int MaxPrimaryAmmo => 0;
 	public virtual int MaxSecondaryAmmo => 0;
+
+	public virtual bool ShowAmmoUI => true;
 	public virtual AmmoType PrimaryAmmoType => AmmoType.None;
 	public virtual AmmoType SecondaryAmmoType => AmmoType.None;
 	public virtual bool Automatic => false;

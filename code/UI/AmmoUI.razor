@@ -27,7 +27,7 @@
 </style>
 
 <root class="ammo">
-	@if ((Game.LocalPawn is Player ply) && ply.Inventory.ActiveChild is Weapon wpn ) {
+	@if ((Game.LocalPawn is Player ply) && ply.Inventory.ActiveChild is Weapon wpn && wpn.ShowAmmoUI == true ) {
 		<div class="number">@wpn.PrimaryAmmo</div>
 		<label class="number">/</label>
 		<div class="number">@ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div>
