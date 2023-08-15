@@ -54,7 +54,7 @@ public class PropInteractor : Carriable
 
 			if ( HeldBody.IsValid() && HeldBody.PhysicsGroup != null )
 			{
-				if ( Input.Pressed( "attack2" ) )
+				if ( Input.Pressed( "attack1" ) )
 				{
 					GrabEnd();
 				}
@@ -94,7 +94,7 @@ public class PropInteractor : Carriable
 			if ( body.BodyType != PhysicsBodyType.Dynamic )
 				return;
 			
-			if ( Input.Down( "attack2" ) )
+			if ( Input.Down( "attack1" ) )
 			{
 				var physicsGroup = tr.Entity.PhysicsGroup;
 
