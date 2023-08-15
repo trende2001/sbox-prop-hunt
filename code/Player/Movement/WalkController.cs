@@ -305,7 +305,12 @@ public partial class WalkController : MovementComponent
 		if ( ws >= 0 ) return ws;
 
 		if ( Input.Down( "Duck" ) || IsDucking ) return CrouchSpeed;
-		if ( Input.Down( "Run" ) ) return SprintSpeed;
+		
+		if ( Input.Down( "Run" ) && Entity.TeamName == "Seekers" )
+		{
+			return SprintSpeed;
+		}
+		
 		if ( Input.Down( "Walk" ) ) return WalkSpeed;
 
 		return DefaultSpeed;
