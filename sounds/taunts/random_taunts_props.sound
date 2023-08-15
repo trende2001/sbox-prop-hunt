@@ -11,7 +11,8 @@
     "sounds/taunts/im-gonna-break-my-monitor-i-swear.vsnd",
     "sounds/taunts/joerogan.vsnd",
     "sounds/taunts/laugh.vsnd",
-    "sounds/taunts/laugh2.vsnd"
+    "sounds/taunts/laugh2.vsnd",
+    "sounds/taunts/whatsup.vsnd"
   ],
   "MaximumDistance": 2301.2522,
   "MinimumDistance": 115.062614
