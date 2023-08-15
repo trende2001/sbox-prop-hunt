@@ -298,6 +298,13 @@ public partial class WalkController : MovementComponent
 		}
 
 	}
+	
+	[ConVar.Replicated(
+		"ph_enable_sprinting",
+		Help = "Enable sprinting for everyone or not.",
+		Saved = true
+	)]
+	public static bool EnableGlobalSprinting { get; set; } = false;
 
 	public virtual float GetWishSpeed()
 	{
@@ -305,10 +312,15 @@ public partial class WalkController : MovementComponent
 		if ( ws >= 0 ) return ws;
 
 		if ( Input.Down( "Duck" ) || IsDucking ) return CrouchSpeed;
-		
-		if ( Input.Down( "Run" ) && Entity.TeamName == "Seekers" )
+
+		if ( Input.Down( "Run" ) )
 		{
-			return SprintSpeed;
+			if ( EnableGlobalSprinting )
+			{
+				return SprintSpeed;
+			}
+
+			return DefaultSpeed;
 		}
 		
 		if ( Input.Down( "Walk" ) ) return WalkSpeed;

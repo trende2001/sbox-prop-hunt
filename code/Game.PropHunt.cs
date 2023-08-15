@@ -67,8 +67,10 @@ public partial class PropHuntGame : GameManager {
 	)] 
 	public static bool EnableDevCam { get; set; } = false;
 	
+	
 	public List<long> RTVs { get; set; } = new();
 	public string NextMap { get; set; } = null;
+	
 
 	[GameEvent.Tick.Server]
 	public virtual void PreGameTick()
