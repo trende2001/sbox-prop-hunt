@@ -7,7 +7,7 @@ namespace MyGame;
 [Library]
 public partial class WalkController : MovementComponent
 {
-	[Net] public float SprintSpeed { get; set; } = 220.0f;
+	[Net] public float SprintSpeed { get; set; } = 250.0f;
 	[Net] public float WalkSpeed { get; set; } = 150.0f;
 	[Net] public float CrouchSpeed { get; set; } = 80.0f;
 	[Net] public float DefaultSpeed { get; set; } = 190.0f;
