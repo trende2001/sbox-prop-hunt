@@ -58,10 +58,15 @@ public partial class PropHuntGame : GameManager
 			Chat.AddChatEntry( To.Everyone,null, $"{cl.Name} has left the game", isInfo: true);
 	}
 	
+	public override void OnKilled( IClient client, Entity pawn )
+	{
+		base.OnKilled( client, pawn );
+	}
+	
 	[ClientRpc]
 	public override void OnKilledMessage( long leftid, string left, long rightid, string right, string method )
 	{
-		KillFeed.Current?.AddEntry( leftid, left, rightid, right, method );
+		Sandbox.UI.KillFeed.Current?.AddEntry( leftid, left, rightid, right, method );
 	}
 	
 	public override void DoPlayerDevCam( IClient client )
