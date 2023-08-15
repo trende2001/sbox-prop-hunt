@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Sandbox;
 
 namespace MyGame;
@@ -64,7 +66,9 @@ public partial class PropHuntGame : GameManager {
 		Help = "Enable devcam for developer purposes."
 	)] 
 	public static bool EnableDevCam { get; set; } = false;
-
+	
+	public List<long> RTVs { get; set; } = new();
+	public string NextMap { get; set; } = null;
 
 	[GameEvent.Tick.Server]
 	public virtual void PreGameTick()
@@ -97,6 +101,8 @@ public partial class PropHuntGame : GameManager {
 		RoundLength = PreRoundTime;
 	}
 
+	[Net] private TimeUntil TimeUntilAnnounce { get; set; } = 4;
+	
 	public virtual void OnRoundStarting()
 	{
 		RoundState = RoundState.Starting;
@@ -119,6 +125,9 @@ public partial class PropHuntGame : GameManager {
 		Sound.FromScreen( To.Everyone, "seekers.unblind.vo" );
 		
 		PopupSystem.DisplayPopup( To.Everyone, "Hide or die", "The seekers will be unblinded in 30 seconds", 30f );
+		
+		AnnounceToTeam( "props.vo.beginmsg", "Props" );
+		AnnounceToTeam( "seekers.vo.beginmsg", "Seekers" );
 	}
 
 	public virtual void OnRoundStart()
@@ -192,10 +201,15 @@ public partial class PropHuntGame : GameManager {
 			OnTeamWin( Teams.Get<Props>() );
 		}
 		
-
 		return;
 	}
-	
+
+	[ClientRpc]
+	public static void AnnounceToTeam(string sound, string teamname)
+	{
+		// Loop through clients in a team, play a sound for each one of them
+		Sound.FromScreen( To.Multiple( Teams.GetByName(teamname).Players.Select( x => x.Client ) ), sound);
+	}
 	
 	[Net] public string WinningTeamName { get; set; }
 	[Net] public Color WinningTeamColor { get; set; }
