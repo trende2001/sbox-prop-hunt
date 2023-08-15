@@ -23,6 +23,7 @@ public class Seekers : BaseTeam
 		
 		player.Inventory.AddItem( new MP5() );
 		player.Inventory.AddItem( new Pistol() );
+		player.Inventory.AddItem( new Fists() );
 		player.Inventory.AddItem( new PropInteractor() );
 
 		player.Ammo.GiveAmmo( AmmoType.Pistol, 55);
