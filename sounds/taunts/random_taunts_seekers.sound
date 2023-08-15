@@ -6,7 +6,9 @@
   "SelectionMode": "Random",
   "Sounds": [
     "sounds/taunts/pluh.vsnd",
-    "sounds/taunts/prowler.vsnd"
+    "sounds/taunts/prowler.vsnd",
+    "sounds/taunts/error_taunt.vsnd",
+    "sounds/taunts/rehehehe.vsnd"
   ],
   "MaximumDistance": 2301.2522,
   "MinimumDistance": 115.062614
