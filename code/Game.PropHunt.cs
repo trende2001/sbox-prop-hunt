@@ -101,6 +101,8 @@ public partial class PropHuntGame : GameManager {
 		
 		TimeSinceRoundStateChanged = 0;
 		RoundLength = PreRoundTime;
+		
+		Event.Run( "Game.Round.Intermission" );
 	}
 
 	[Net] private TimeUntil TimeUntilAnnounce { get; set; } = 4;
@@ -128,8 +130,9 @@ public partial class PropHuntGame : GameManager {
 		
 		PopupSystem.DisplayPopup( To.Everyone, "Hide or die", "The seekers will be unblinded in 30 seconds", 30f );
 		
-		AnnounceToTeam( "props.vo.beginmsg", "Props" );
 		AnnounceToTeam( "seekers.vo.beginmsg", "Seekers" );
+		
+		Event.Run( "Game.Round.Starting" );
 	}
 
 	public virtual void OnRoundStart()
@@ -142,6 +145,8 @@ public partial class PropHuntGame : GameManager {
 		Sound.FromScreen( To.Everyone, "seeker.unleashed.vo" );
 
 		Decal.Clear( To.Everyone, true, true );
+		
+		Event.Run( "Game.Round.Start" );
 	}
 
 	public virtual void AssignToTeams()
@@ -189,6 +194,8 @@ public partial class PropHuntGame : GameManager {
 		{
 			Teams.Get<Props>().AddPlayer( player );
 		}
+
+		Event.Run( "Game.Round.AssignToTeams" );
 	}
 
 	public virtual void RoundGameTick()
@@ -230,6 +237,8 @@ public partial class PropHuntGame : GameManager {
 			Sound.FromScreen(To.Everyone, "seekers.win.vo");
 		}
 		
+		Event.Run( "Game.Round.TeamWin" );
+
 		//PopupSystem.DisplayPopup( "Game Over", $"{team.TeamName} win!" );
 		OnRoundEnding();
 	}
@@ -241,6 +250,8 @@ public partial class PropHuntGame : GameManager {
 		RoundLength = PostRoundTime;
 		
 		// TODO: show spectator panel to everyone (client rpc)
+		
+		Event.Run( "Game.Round.Ending" );
 	}
 
 	[Net] public int RoundNumber { get; set; } = 1;
@@ -252,6 +263,8 @@ public partial class PropHuntGame : GameManager {
 		Teams.Get<Seekers>().Reset();
 		
 		// TODO: implement RTV and map votes
+
+		Event.Run( "Game.Round.End" );
 
 		RoundNumber++;
 		ResetRound();
@@ -307,5 +320,7 @@ public partial class PropHuntGame : GameManager {
 
 			
 		}
+		
+		Event.Run( "Game.Events.OnExplosion" );
 	}
 }
