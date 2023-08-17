@@ -32,6 +32,10 @@
         <a class="button" @onclick=@Game.Menu.Close>Quit</a>
 
     </div>
+    
+    <div class="right columned">
+        <FriendsListWidget/>
+    </div>
 
 </root>
 
@@ -53,8 +57,8 @@
         options.Cookie = $"{Game.Menu.Package.FullIdent}.serverconfig";
 
         options.ModalTitle = "Create Game";
-        options.MapFilter = "type:map sort:trending";
-        options.Default.Map = "facepunch.construct23";
+        options.MapFilter = "type:map sort:trending game:trend.prop_hunt";
+        options.Default.Map = "baks.office";
         options.Default.GameTitle = $"{Game.Menu.Package.Title} Server";
 
         options.OnStartGame = (setup) =>
