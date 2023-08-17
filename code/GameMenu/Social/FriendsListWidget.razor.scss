@@ -1,0 +1,58 @@
+﻿FriendsListWidget
+{
+  width: 16%;
+  gap: 8px;
+  padding: 16px;
+
+  background-color: rgba( 25, 25, 25, 0.5 );
+
+  align-content: center;
+  cursor: pointer;
+  transition: all 0.1s ease;
+
+  label
+  {
+    font-size: 22px;
+    font-family: Poppins;
+    font-weight: 550;
+    text-transform: uppercase;
+    height: 20px;
+    opacity: 1;
+  }
+
+  box-shadow: 5px 5px 30px rgba( black, 0.2 );
+
+  &:hover
+  {
+    .label
+    {
+      color: white;
+    }
+    > .background
+    {
+      background-color: rgba(lighten(255, 255, 255, 0.1), 1);
+    }
+  }
+
+  &:active
+  {
+    > .background
+    {
+      background-color: rgba(lighten(1, 0.2), 1);
+    }
+  }
+
+  >.background
+  {
+    pointer-events: none;
+    width: 100%;
+    position: absolute;
+    height: 100%;
+
+    background-size: cover;
+    mask-mode: auto;
+    background-color: white;
+    opacity: 0.2;
+    //mask-image: url( https://files.facepunch.com/tony/1b2611b1/dots_repeat.png );
+  }
+}

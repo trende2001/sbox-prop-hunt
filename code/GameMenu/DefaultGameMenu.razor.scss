@@ -28,22 +28,24 @@
 {
 	padding: 4px 16px;
 
-	opacity: 0.8;
+	opacity: 0.5;
 
-	font-size: 28px;
+	font-size: 35px;
 	font-family: Poppins;
-	font-weight: 700;
+	font-weight: 500;
 	flex-shrink: 0;
 }
 
 .button
 {
-	background-color: #000a;
+	//background-color: #000a;
 	cursor: pointer;
-
+	
 	&:hover
 	{
 		opacity: 1;
+		transform: translateY(2);
+		transition: all 0.2s ease-in-out;
 	}
 
 	&:active
