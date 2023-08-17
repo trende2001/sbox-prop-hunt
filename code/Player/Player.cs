@@ -523,6 +523,12 @@ partial class Player : AnimatedEntity
 		health = (float)Math.Round( health / 5 ) * 5;
 		ply.MaxHealth = health;
 		ply.Health = health * multiplier;
+		
+		// Fallback to 10 health if prop is 0 health
+		if (ply.Health <= 0)
+		{
+			ply.Health = 10f;
+		}
 
 		if( ply.Children.Any() )
 		{
