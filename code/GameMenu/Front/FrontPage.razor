@@ -1,0 +1,83 @@
+@using System
+@using System.Reflection.Metadata
+@using Sandbox;
+@using Sandbox.MenuSystem;
+@using Sandbox.UI;
+@namespace MyGame
+@inherits Panel
+@attribute [StyleSheet]
+
+<root style="flex-direction: column;">
+
+    <div class="game-title">
+        @Game.Menu.Package.Title
+    </div>
+
+    <div class="controls">
+
+        @if ( Game.InGame )
+        {
+            <a class="button" href="/active">Current Game</a>
+            <a class="button" onclick=@LeaveGame>Leave Game</a>
+            <span style="height: 20px;"></span>
+        }
+        else
+        {
+            <a class="button" onclick="@CreateNewGame">Create Game</a>
+        }
+
+        <a class="button" onclick="@OpenServerList">Find a Game</a>
+        <a class="button" href="/settings">Settings</a>
+
+        <span style="height: 20px;"></span>
+
+        <a class="button" @onclick=@Game.Menu.Close>Quit</a>
+
+    </div>
+    
+    <div class="right columned">
+        <FriendsListWidget/>
+    </div>
+
+</root>
+
+@code
+{
+    void LoadSavedGame()
+    {
+        this.Navigate( "/load" );
+    }
+
+    void LeaveGame()
+    {
+        Game.Menu.LeaveServer("Leaving");
+    }
+
+    void CreateNewGame()
+    {
+        var options = new Sandbox.Modals.GameCreateModalOptions();
+        options.Cookie = $"{Game.Menu.Package.FullIdent}.serverconfig";
+
+        options.ModalTitle = "Create Game";
+        options.MapFilter = "type:map sort:trending game:trend.prop_hunt";
+        options.Default.Map = "baks.office";
+        options.Default.GameTitle = $"{Game.Menu.Package.Title} Server";
+
+        options.OnStartGame = (setup) =>
+        {
+            Game.Menu.StartServerAsync(setup.MaxPlayers, setup.GameTitle, setup.Map);
+        };
+
+        Game.Overlay.ShowCreateGame(options);
+    }
+
+    void OpenServerList()
+    {
+    /*options.OnSelected = (server) =>
+        {
+            Game.Menu.ConnectToServer(server.SteamId);
+        };*/
+
+        this.Navigate("/servers");
+    }
+}

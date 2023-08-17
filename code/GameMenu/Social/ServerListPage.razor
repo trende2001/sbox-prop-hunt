@@ -1,0 +1,34 @@
+﻿@using Sandbox
+@using Sandbox.UI
+@using System.Threading.Tasks;
+@using System.Linq;
+@using System;
+
+@implements INavigatorPage
+@inherits Panel
+@attribute [StyleSheet]
+@namespace MyGame
+
+<root style="flex-direction: column; padding: 0 170px; background-color: rgba(0, 0, 0, 0.5)">
+	<div class="navbar">
+		<div class="left">
+			<a class="button" href="/"> Home </a>
+			<span class="block">&gt;</span>
+			<span class="block">Server List</span>
+		</div>
+		<div class="right">
+			<span class="button" onclick="@(() => ServerList.Refresh())">
+				<i style="padding-top: 10px">sync</i>
+				<label>Refresh</label>
+			</span>
+		</div>
+	</div>
+
+
+	<ServerListPanel class="server-list" @ref="ServerList" ShowGame=@false FilterByGame=@Game.Menu.Package.FullIdent></ServerListPanel>
+</root>
+
+@code
+{
+	ServerListPanel ServerList;
+}

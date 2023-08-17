@@ -1,0 +1,98 @@
+
+.loadingpanel
+{
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-color: rgb(56, 56, 56);
+	text-stroke: 4px rgb(32,32,32);
+	color: white;
+	font-family: Poppins-SemiBold;
+	font-size: 32px;
+	align-items: baseline;
+	justify-content: flex-end;
+	flex-direction: column;
+	transition: all 0.2s ease-out;
+	padding: 50px;
+
+	> .title
+	{
+		font-size: 80px;
+		color: #888;
+		font-weight: bolder;
+	}
+
+	> .subtitle
+	{
+		font-size: 30px;
+		color: #888;
+		font-weight: 100;
+	}
+
+	> .controls
+	{
+		position: absolute;
+		bottom: 70px;
+		right: 45px;
+
+		.button
+		{
+			font-size: 35px;
+			padding: 15px 50px;
+			background-color: gray;
+			color: white;
+			font-weight: normal;
+			cursor: pointer;
+
+			&:hover
+			{
+				background-color: #888;
+			}
+		}
+	}
+
+	> .progress
+	{
+		margin: 20px 0px;
+		background-color: #0003;
+		width: 500px;
+		border-radius: 5px;
+		overflow: hidden;
+
+		.bar
+		{
+			background-color: #fff1;
+			position: absolute;
+			height: 100%;
+		}
+
+		.text-left
+		{
+			flex-grow: 1;
+			flex-shrink: 0;
+		}
+
+		.text-right
+		{
+			flex-shrink: 0;
+		}
+
+		.text-left, .text-right
+		{
+			padding: 5px 20px;
+			white-space: nowrap;
+			font-weight: bold;
+			opacity: 0.1;
+			font-size: 20px;
+			align-items: flex-end;
+
+			.unit
+			{
+				font-size: 15px;
+				opacity: 0.5;
+			}
+		}
+	}
+}
+
+

@@ -1,0 +1,36 @@
+.server-list
+{
+  flex-direction: column;
+  flex-shrink: 1;
+}
+
+ServerRowPackage {
+    > column {
+      flex-direction: column;
+    }
+}
+
+.server-list ServerRow {
+    flex-direction: row;
+    cursor: pointer;
+    font-size: 20px;
+    margin-bottom: 3px;
+    align-items: center;
+    opacity: 1;
+    border-radius: 2px;
+    background-color: rgba(32,32,32,0.7);
+    border: 3px solid rgba(128,128,128,0.10);
+    box-shadow: 0px 0px 24px rgba(0,0,0,0.4);
+    
+    transition: all 0.1s ease-in;
+  
+    &:hover {
+      background-color: rgba( white, 0.01 );
+      opacity: 1;
+    }
+    &:active {
+      opacity: 1;
+      top: -5px;
+      right: -5px;
+    }
+}
