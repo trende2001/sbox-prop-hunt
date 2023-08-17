@@ -21,6 +21,7 @@ public class Props : BaseTeam
 		player.Tags.Add( "propplayer" );
 
 		player.Components.Remove( new CitizenAnimationComponent() );
+		player.Components.Add( new UnstuckComponent() );
 	}
 
 	[ConCmd.Admin( "become_props" )]
