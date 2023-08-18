@@ -70,6 +70,8 @@ public partial class PropHuntGame : GameManager {
 	
 	public List<long> RTVs { get; set; } = new();
 	public string NextMap { get; set; } = null;
+
+	public static bool IsFirstRound { get; set; } = true;
 	
 
 	[GameEvent.Tick.Server]
@@ -113,6 +115,13 @@ public partial class PropHuntGame : GameManager {
 
 		TimeSinceRoundStateChanged = 0;
 		RoundLength = PreparingRoundTime;
+
+		if ( IsFirstRound )
+		{
+			// Make intermission time 1 second after round 1
+			PreRoundTime = 1;
+			IsFirstRound = false;
+		}
 		
 		foreach ( var player in Entity.All.OfType<Player>().ToList() )
 		{
@@ -130,7 +139,7 @@ public partial class PropHuntGame : GameManager {
 		
 		PopupSystem.DisplayPopup( To.Everyone, "Hide or die", "The seekers will be unblinded in 30 seconds", 30f );
 		
-		AnnounceToTeam( "seekers.vo.beginmsg", "Seekers" );
+		// AnnounceToTeam( "seekers.vo.beginmsg", "Seekers" );
 		
 		Event.Run( "Game.Round.Starting" );
 	}
