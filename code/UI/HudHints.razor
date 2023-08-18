@@ -18,6 +18,7 @@
         label {
             color: white;
             font-family: Poppins;
+            align-items: center;
             
             font-size: 40px;
             top: 2px;
@@ -30,6 +31,10 @@
             margin-left: 4px;
             margin-right: 4px;
         }
+        
+                    inputglyph {
+                        margin: -7px 0px 5px 2px;
+                    }
     
         .pickup {
             position: absolute;
@@ -43,11 +48,11 @@
             }
     
             left: 50%;
-            bottom: 16%;
-    
-            .name {
-                margin-left: 4px;
-            }
+            bottom: 20%;
+        }
+        
+        .name {
+        	margin-left: 4px;
         }
         
         .reload {
@@ -71,16 +76,16 @@
         }
             
         .currentspec {
-                        position: absolute;
-                        height: 15px;
-                        transition: all 0.1s ease;
-                        transform-origin: 0% 0%;
-                        transform: scaleX( 1 );
-                        
-                        left: 1.2%;
-                        top: 80%;
-                        margin-top: 0px;
-                        margin-left: 40px;
+			position: absolute;	    
+            left: 50%;
+            padding: 33px;
+            bottom: 10%;
+			transform: translateX(-50%);
+			transform-origin: 0% 0%;
+			width: 300px;
+			height: 64px;
+			background-color: rgba(0, 0, 0, 0.3);
+			border-radius: 7px;
         }
     }
 </style>
@@ -99,12 +104,13 @@
     		}
 	    }
 	
-	<div class="pickup" @ref="PickupHint">
-		<label class="name" @ref="PickupLabel"/>
-	</div>
+		<div class="pickup" @ref="PickupHint">
+			<InputGlyph button="use"></InputGlyph>
+			<label class="name" @ref="PickupLabel"/>
+		</div>
 
 	<div class="reload" @ref="PickupAdvice">
-		<label>Right click to break</label>
+		<label class="name">Right click to break</label>
 	</div>
 </root>
 
