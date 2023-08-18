@@ -33,7 +33,7 @@ public class Grenade : BasePhysics
 
 	public void BlowUp()
 	{
-		PropHuntGame.Explosion( this, Owner, this.Position, 200f, 120f, 60f );
+		PropHuntGame.Explosion( this, Owner, this.Position, 200f, 320f, 60f );
 		Delete();
 	}
 }
