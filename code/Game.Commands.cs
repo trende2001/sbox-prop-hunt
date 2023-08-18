@@ -131,7 +131,13 @@ public partial class PropHuntGame
 		PropHuntGame.Current.RoundState = RoundState.Starting;
 		PropHuntGame.Current.TimeSinceRoundStateChanged = 0;
 		PropHuntGame.Current.RoundLength = 0;
-	}  
+	} 
+	
+	[ConCmd.Admin("map_vote")]
+	public static void MapVote()
+	{
+		var vote = new MapVoteEntity();
+	}
 
 	static bool DefaultCleanupFilter( Entity ent )
 	{

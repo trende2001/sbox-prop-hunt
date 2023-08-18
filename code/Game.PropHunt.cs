@@ -18,7 +18,7 @@ public partial class PropHuntGame : GameManager {
 		Min = 1,
 		Saved = true
 	)]
-	public static int RoundCount { get; set; } = 8;
+	public static int RoundCount { get; set; } = 6;
 	
 	[ConVar.Replicated(
 		"ph_mp_preroundtime",
@@ -267,7 +267,7 @@ public partial class PropHuntGame : GameManager {
 		Event.Run( "Game.Round.Ending" );
 	}
 
-	[Net] public int RoundNumber { get; set; } = 1;
+	[Net] public int RoundNumber { get; set; } = 0;
 	public virtual void OnRoundEnd()
 	{
 		RoundState = RoundState.Ended;
@@ -279,8 +279,28 @@ public partial class PropHuntGame : GameManager {
 
 		Event.Run( "Game.Round.End" );
 
-		RoundNumber++;
-		ResetRound();
+		if( NextMap != null )
+		{
+			Game.ChangeLevel( NextMap );
+			return;
+		}
+
+		if ( RoundNumber >= RoundCount )
+		{
+			DoMapVote();
+		}
+		else
+		{
+			RoundNumber++;
+			ResetRound();
+		}
+	}
+
+	public virtual void DoMapVote()
+	{
+		Event.Run( "Game.Round.MapVote", this );
+		RoundState = RoundState.Voting;
+		var a = new MapVoteEntity();
 	}
 	
 	public static void Explosion( Entity weapon, Entity owner, Vector3 position, float radius, float damage, float forceScale )

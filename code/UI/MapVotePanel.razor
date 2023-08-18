@@ -1,0 +1,88 @@
+﻿@using Sandbox
+@using Sandbox.UI
+@using System.Collections.Generic
+@using System.Linq
+@using System
+@using System.Threading.Tasks
+
+@namespace MyGame
+
+@attribute [StyleSheet]
+@inherits Panel
+
+<root class="root">
+    @if (Visible)
+    {
+        <div class="mapvote">
+            <div class="segtop">
+                @TitleText - @TimeText
+            </div> 
+            <div class="content">
+                @{
+                    if (OwnerEntity.Maps != null && OwnerEntity.Maps.Any())
+                    {
+                        foreach (var package in OwnerEntity.Maps)
+                        {
+                            var cclass = "maplisting";
+                            if (package.FullIdent == SelectedMap)
+                            {
+                                cclass = "maplisting selected";
+                            }
+
+                            var image = package.Thumb;
+                            if (string.IsNullOrEmpty(image))
+                            {
+                                image = package.OrgThumb;
+                            }
+                            if (string.IsNullOrEmpty(image))
+                            {
+                                image = "https://placekitten.com/g/160/160";
+                            }
+
+                            <div class="listing">
+                                <button class="@cclass" style="background-image: url(@(image));" @onclick=@(() => {MapVoteEntity.PredictedSetVote(package.FullIdent); SelectedMap = package.FullIdent;})>
+                                    <div class="title">@package.Title</div>
+
+                                    @{
+                                        var a = 0;
+                                        if (package.FullIdent == OwnerEntity.LocalClientVote) a = 1;
+                                        foreach (var i in MapVoteEntity.Current.Votes)
+                                        {
+                                            if (i.Key == Game.LocalClient) continue;
+                                            if (i.Value == package.FullIdent) a++;
+                                        }
+                                    }
+                                    <div class="votes">
+                                        <div class="number">@a</div> 
+                                    </div>
+                                    <div class="info">
+                                        <div class="creator">@(
+                                $"By {package.OrgTitle}"
+                                )</div>
+                                    </div>
+
+                                </button>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    }
+</root>
+
+@code
+{
+    public string TitleText { get; set; } = "Map Vote";
+    public string SubtitleText { get; set; } = "Choose your next map";
+    public string TimeText { get; set; } = "00:33";
+    public int VoteUpdater { get; set; } = 0; 
+    public MapVoteEntity OwnerEntity { get; set; }
+    public string SelectedMap = "";
+    public bool Visible = true;
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(OwnerEntity.Maps.Count(), TimeText, VoteUpdater, SelectedMap, Visible);
+    }
+}
