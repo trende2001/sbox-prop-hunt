@@ -33,7 +33,8 @@
         "water": "Trigger",
         "player": "Collide",
         "propplayer": "Collide",
-        "seeker": "Collide"
+        "seeker": "Collide",
+        "corpse": "Collide"
       },
       "Pairs": [
         {
@@ -79,6 +80,26 @@
           "a": "propplayer",
           "b": "propplayer",
           "r": "Ignore"
+        },
+        {
+          "a": "propplayer",
+          "b": "corpse",
+          "r": "Ignore"
+        },
+        {
+          "a": "seeker",
+          "b": "corpse",
+          "r": "Ignore"
+        },
+        {
+          "a": "player",
+          "b": "corpse",
+          "r": "Ignore"
+        },
+        {
+          "a": "corpse",
+          "b": "corpse",
+          "r": "Collide"
         }
       ]
     },
@@ -89,7 +110,7 @@
       {
         "Name": "Untitled Config",
         "GameIdent": "trend.prop_hunt#local",
-        "MapName": "baks.office",
+        "MapName": "sugmagaming.fishtank",
         "MaxPlayers": 64,
         "GameSettings": {},
         "Addons": "",
