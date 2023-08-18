@@ -214,9 +214,13 @@ public partial class PropHuntGame : GameManager {
 			team.DoGameruleTick();
 		}
 
-		if ( TimeSinceRoundStateChanged > RoundLength )
+		if ( TimeSinceRoundStateChanged > RoundLength && Teams.Get<Seekers>().Players.Count( x => x.LifeState == LifeState.Alive ) <= 0 )
 		{
 			OnTeamWin( Teams.Get<Props>() );
+		}
+		else if (Teams.Get<Props>().Players.Count(x => x.LifeState == LifeState.Alive) <= 0)
+		{
+			OnTeamWin( Teams.Get<Seekers>() );
 		}
 		
 		return;

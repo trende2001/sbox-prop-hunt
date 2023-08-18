@@ -19,6 +19,7 @@ public class Props : BaseTeam
 		base.AddPlayer( player );
 		
 		player.Tags.Add( "propplayer" );
+		player.Tags.Add( "player" );
 
 		player.Components.Remove( new CitizenAnimationComponent() );
 		player.Components.Add( new UnstuckComponent() );
