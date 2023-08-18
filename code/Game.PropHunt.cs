@@ -39,7 +39,7 @@ public partial class PropHuntGame : GameManager {
 		Help = "The base number of seconds a round should go on, before any Haste Mode adjustments. The default is 360 seconds (6 minutes).",
 		Saved = true
 	)]
-	public static int RoundTime { get; set; } = 5 * 60;
+	public static int RoundTime { get; set; } = 6 * 60;
 
 	[ConVar.Replicated(
 		"ph_mp_postroundtime",
