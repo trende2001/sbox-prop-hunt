@@ -124,6 +124,14 @@ public partial class PropHuntGame
 	{
 		CleanUpRound();
 	}
+	
+	[ConCmd.Admin( "start_game" )]
+	public static void StartGameCommand()
+	{
+		PropHuntGame.Current.RoundState = RoundState.Starting;
+		PropHuntGame.Current.TimeSinceRoundStateChanged = 0;
+		PropHuntGame.Current.RoundLength = 0;
+	}  
 
 	static bool DefaultCleanupFilter( Entity ent )
 	{
