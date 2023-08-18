@@ -13,10 +13,8 @@ public class PropAnimator : AnimationComponent
 		var turnSpeed = 0.02f;
 
 		if ( ply.LockRotation )
-		{
 			ply.Rotation = ply.ViewAngles.WithPitch( 0f ).ToRotation();
-			return;
-		}
+		return;
 
 
 		Rotation idealRotation = ply.EyeLocalRotation;
