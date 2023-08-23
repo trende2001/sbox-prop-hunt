@@ -14,7 +14,7 @@ public class MP5 : Gun
 	public override int MaxPrimaryAmmo => 25;
 
 	public override AmmoType PrimaryAmmoType => AmmoType.SMG;
-	public override AmmoType SecondaryAmmoType => AmmoType.Buckshot;
+	public override AmmoType SecondaryAmmoType => AmmoType.Rifle;
 	
 
 	public override bool Automatic { get; } = true;

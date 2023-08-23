@@ -15,6 +15,8 @@ public partial class Weapon : Carriable
 	public virtual bool ShowAmmoUI => true;
 	public virtual AmmoType PrimaryAmmoType => AmmoType.None;
 	public virtual AmmoType SecondaryAmmoType => AmmoType.None;
+	
+	public virtual bool SequentialReloading => false;
 	public virtual bool Automatic => false;
 	[Net] public int PrimaryAmmo { get; set; } = 0;
 	[Net] public int SecondaryAmmo { get; set; } = 0;
@@ -33,7 +35,7 @@ public partial class Weapon : Carriable
 	{
 		if ( Owner is not Player ) return;
 		
-		if ( (cl.Pawn as Player).TeamName == "Seekers" && PropHuntGame.Current.RoundState == RoundState.Preparing )
+		if ( (cl.Pawn as Player).TeamName == "Seekers" && PropHuntGame.Current.RoundState == RoundState.Starting )
 			return;
 		
 		if ( CanReloadPrimary() && Input.Pressed( "Reload" ) )
