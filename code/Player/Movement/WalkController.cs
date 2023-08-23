@@ -1,4 +1,5 @@
 ﻿
+#nullable enable
 using Sandbox;
 using System;
 using System.Collections.Generic;
@@ -847,7 +848,7 @@ public partial class WalkController : MovementComponent
 		Move();
 	}
 
-	Entity PreviousGroundEntity;
+	Entity? PreviousGroundEntity;
 	int TryLatchNextTickCounter = 0;
 	Vector3 LastNonZeroWishVelocity;
 	[ConVar.Replicated( "sv_ladderlatchdebug" )]

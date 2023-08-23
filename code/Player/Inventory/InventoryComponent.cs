@@ -5,7 +5,7 @@ public partial class InventoryComponent : SimulatedComponent, ISingletonComponen
 {
 	[Net] public Entity ActiveChild { get; set; }
 	[ClientInput] public Entity ActiveChildInput { get; set; }
-	[Net] public List<Entity> Items { get; set; } = new();
+	[Net] public IList<Entity> Items { get; set; } = new List<Entity>();
 	public static int MaxItems { get; set; } = 32;
 
 	[Predicted] Entity PreviousActiveChild { get; set; }

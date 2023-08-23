@@ -22,13 +22,15 @@ public class Seekers : BaseTeam
 		base.AddPlayer( player );
 		
 		player.Inventory.AddItem( new MP5() );
+		player.Inventory.AddItem( new Shotgun() );
 		player.Inventory.AddItem( new Pistol() );
 		player.Inventory.AddItem( new Fists() );
 		player.Inventory.AddItem( new PropInteractor() );
 
 		player.Ammo.GiveAmmo( AmmoType.Pistol, 55);
 		player.Ammo.GiveAmmo( AmmoType.SMG, 100 );
-		player.Ammo.GiveAmmo( AmmoType.Buckshot, 1 );
+		player.Ammo.GiveAmmo( AmmoType.Rifle, 1 );
+		player.Ammo.GiveAmmo( AmmoType.Buckshot, 8 );
 		
 		player.Tags.Add( "seeker" );
 	}

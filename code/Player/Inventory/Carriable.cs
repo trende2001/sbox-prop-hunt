@@ -73,7 +73,6 @@ public partial class Carriable : AnimatedEntity
 	float ViewModelLagSpeed = 5f; // normally 5
 
 	Vector3 m_vecLastFacing;
-	Vector3 m_vecLastPos;
 	
 	Vector3 VectorMA( Vector3 va, float scale, Vector3 vb )
 	{

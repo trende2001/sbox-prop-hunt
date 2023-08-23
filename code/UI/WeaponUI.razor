@@ -178,7 +178,6 @@
 			} 
 		}  
 	}
-	[ConVar.Client] public static bool ttt_special_inventory_mode_for_xenthio { get; set; } = false;
 	public IDictionary<int, Entity> SlottedInventory = new Dictionary<int, Entity>();
 	public void GetSlotSystemDictionary()
 	{
@@ -188,16 +187,8 @@
 			var i = 0;
 			foreach (var ent in ply.Inventory.Items.OrderBy(OrderOnType))
 			{
-				if (!ttt_special_inventory_mode_for_xenthio)
-				{
-					var d = OrderOnType(ent) + 1;
-					while (SlottedInventory.ContainsKey(d)) d++;
-					SlottedInventory.Add(d, ent);
-				} else
-				{
-					i++;
-					SlottedInventory.Add(i, ent);
-				}
+				i++;
+				SlottedInventory.Add(i, ent);
 			} 
 		}
 	} 
