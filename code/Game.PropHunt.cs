@@ -214,7 +214,7 @@ public partial class PropHuntGame : GameManager {
 			team.DoGameruleTick();
 		}
 
-		if ( TimeSinceRoundStateChanged > RoundLength && Teams.Get<Seekers>().Players.Count( x => x.LifeState == LifeState.Alive ) <= 0 )
+		if ( TimeSinceRoundStateChanged > RoundLength || Teams.Get<Seekers>().Players.Count( x => x.LifeState == LifeState.Alive ) <= 0 )
 		{
 			OnTeamWin( Teams.Get<Props>() );
 		}
@@ -334,7 +334,7 @@ public partial class PropHuntGame : GameManager {
 
 			var tr = Trace.Ray( position, targetPos )
 				.Ignore( weapon )
-				.WorldOnly()
+				.StaticOnly()
 				.Run();
 
 			if ( tr.Fraction < 0.98f )

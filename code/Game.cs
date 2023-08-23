@@ -14,7 +14,7 @@ namespace MyGame;
 /// </summary>
 public partial class PropHuntGame : GameManager
 {
-	public static PropHuntGame Current { get; protected set; }
+	public new static PropHuntGame Current { get; protected set; }
 
 	public PropHuntGame()
 	{
