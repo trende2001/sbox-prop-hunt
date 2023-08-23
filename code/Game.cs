@@ -47,7 +47,7 @@ public partial class PropHuntGame : GameManager
 		}
 
 		if ( RoundState != RoundState.None )
-			Chat.AddChatEntry( To.Everyone,null, $"{client.Name} has joined the game", isInfo: true);
+			Chat.AddChatEntry( To.Everyone, "", $"{client.Name} has joined the game", isInfo: true);
 	}
 
 	public override void ClientDisconnect( IClient cl, NetworkDisconnectionReason reason )
@@ -55,7 +55,7 @@ public partial class PropHuntGame : GameManager
 		base.ClientDisconnect( cl, reason );
 		
 		if ( reason != NetworkDisconnectionReason.SERVER_SHUTDOWN && reason != NetworkDisconnectionReason.Kicked )
-			Chat.AddChatEntry( To.Everyone,null, $"{cl.Name} has left the game", isInfo: true);
+			Chat.AddChatEntry( To.Everyone, "", $"{cl.Name} has left the game", isInfo: true);
 	}
 	
 	public override void OnKilled( IClient client, Entity pawn )
