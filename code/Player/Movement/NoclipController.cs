@@ -12,6 +12,23 @@ public partial class NoclipController : MovementComponent
 		var pl = Entity as Player;
 		pl.InputDirection = Input.AnalogMove;
 	}
+	
+	protected override void OnActivate()
+	{
+		Entity.EnableAllCollisions = false;  
+		base.OnActivate();
+	}
+	protected override void OnDeactivate()
+	{
+		// Don't restore collisions if we aren't alive (spectating freecam)
+		if (Entity.LifeState == LifeState.Alive)
+		{
+			Entity.EnableAllCollisions = true;
+		}
+
+		base.OnDeactivate();
+	}
+	
 	public override void Simulate( IClient cl )
 	{
 
