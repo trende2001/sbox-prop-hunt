@@ -55,26 +55,6 @@
         	margin-left: 4px;
         }
         
-        .reload {
-                position: absolute;
-                height: 12px;
-                opacity: 0;
-                transition: all 0.1s ease;
-                transform-origin: 0% 50%;
-                transform: scaleX( 0 );
-        
-        
-                &.show {
-                    transform: scaleX( 1 );
-                    opacity: 0.8;
-                }
-        
-                left: 39.8%;
-                top: 75%;
-                margin-top: -12px;
-                margin-left: 40px;
-        }
-            
         .currentspec {
 			position: absolute;	    
             left: 50%;
@@ -108,17 +88,12 @@
 			<InputGlyph button="use"></InputGlyph>
 			<label class="name" @ref="PickupLabel"/>
 		</div>
-
-	<div class="reload" @ref="PickupAdvice">
-		<label class="name">Right click to break</label>
-	</div>
 </root>
 
 @code {
 	public Panel PickupHint { get; set; }
 	public Label PickupLabel { get; set; }
 	public Panel CurrentPlayerSpectated { get; set; }
-	public Panel PickupAdvice { get; set; }
 
     private Entity lastObserved;
     protected Entity LastObserved

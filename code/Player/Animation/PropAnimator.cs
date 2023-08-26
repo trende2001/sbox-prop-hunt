@@ -10,9 +10,9 @@ public class PropAnimator : AnimationComponent
 		
 		var ply = Entity as Player;
 
-		if ( ply.LockRotation )
+		if ( !ply.LockRotation )
 			ply.Rotation = ply.ViewAngles.WithPitch( 0f ).ToRotation();
-
+			return;
 
 		Rotation idealRotation = ply.EyeLocalRotation;
 		idealRotation.x = 0f;

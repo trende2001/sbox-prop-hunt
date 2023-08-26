@@ -29,6 +29,7 @@ public class HUDRootPanel : RootPanel
 		AddChild<VoiceList>();
 		AddChild<VoiceSpeaker>();
 		AddChild<HudHints>();
+		AddChild<PropLockAlert>();
 		AddChild<AmmoUI>();
 		AddChild<PopupList>();
 	}

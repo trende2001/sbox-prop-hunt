@@ -192,6 +192,7 @@ partial class Player : AnimatedEntity
 	[ClientInput] public Vector3 InputDirection { get; set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
 
+	[Net]
 	public bool LockRotation { get; private set; }
 
 	public MovementComponent MovementController => Components.Get<MovementComponent>();
