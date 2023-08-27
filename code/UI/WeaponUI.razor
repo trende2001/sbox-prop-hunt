@@ -5,6 +5,8 @@
 @using System.Collections.Generic;
 @using System.Linq;
 @namespace MyGame
+
+@inherits Panel
 <style>
 	.WeaponUI {
 		flex-direction:column;
@@ -61,7 +63,7 @@
 <root class="WeaponUI">
 	@if (Game.LocalPawn is Player ply)
 	{
-		var i = 0;
+		var iterations = 0;
 		GetSlotSystemDictionary();
 		//var items = ply.Inventory.Items.OrderBy(OrderOnType);
 		foreach (var slotteditem in SlottedInventory)
@@ -69,7 +71,9 @@
 			if( slotteditem.Value == null || ! slotteditem.Value.IsValid ) continue;
 
 			var cry = slotteditem.Value;
-			i++;
+			
+			iterations++;
+			
 			var name = TypeLibrary.GetType(cry.GetType()).Title;
 			<div class="Listing">
 
@@ -79,27 +83,15 @@
 					
 					<div class="WeaponSelected">
 						@name
-						@if (cry is Weapon wpn && wpn.PrimaryAmmoType != AmmoType.None)
-						{
-							//<div>@wpn.PrimaryAmmo / @ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div>
-						}
 					</div>
 				} else if (cry == ply.Inventory.ActiveChild)
 				{
 					<div class="WeaponActive">
 						@name
-						@if (cry is Weapon wpn && wpn.PrimaryAmmoType != AmmoType.None)
-						{
-							//<div>@wpn.PrimaryAmmo / @ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div>
-						}
 					</div>
 				} else {
 					<div class="Weapon">
 						@name
-						@if (cry is Weapon wpn && wpn.PrimaryAmmoType != AmmoType.None)
-						{
-							//<div>@wpn.PrimaryAmmo / @ply.Ammo.AmmoCount(wpn.PrimaryAmmoType)</div>
-						}
 					</div> 
 				}
 			</div>
@@ -110,8 +102,9 @@
 	TimeSince TimeSinceSelected;
 	Entity SelectedCarriable { get; set; }
 	int SelectedCarriableIndex { get; set; } = -10;
+	
 	[GameEvent.Client.BuildInput]
-	public void invTick()
+	public void InventoryTick()
 	{
 		if (Game.LocalPawn is Player ply && (!(ply.Inventory.GetSlot(ply.Inventory.GetActiveSlot()) is Carriable c) || c.CanSwitchItems ) )
 		{ 
@@ -179,6 +172,7 @@
 		}  
 	}
 	public IDictionary<int, Entity> SlottedInventory = new Dictionary<int, Entity>();
+	
 	public void GetSlotSystemDictionary()
 	{
 		if (Game.LocalPawn is Player ply)
@@ -203,24 +197,28 @@
 			return 2;
 		if (item is Carriable)
 			return 3;
-		/*if (item is Holstered)
-			return 8;*/
+
 		return 5;
 	}
 	protected override int BuildHash()
 	{
 		HashCode hash = new();
 		var primaryammo = 0;
+		
 		if ((Game.LocalPawn as Player).Inventory.ActiveChild is Weapon wpn)
 		{
 			primaryammo = wpn.PrimaryAmmo;
 		}
+		
 		hash.Add((Game.LocalPawn as Player).Ammo.Ammo.ToArray());
 		hash.Add((Game.LocalPawn as Player).Inventory.Items.ToArray());
 		hash.Add((Game.LocalPawn as Player).Inventory.ActiveChild);
 		hash.Add((Game.LocalPawn as Player).Inventory.ActiveChildInput);
+		
 		hash.Add(SelectedCarriableIndex);
+		
 		hash.Add(primaryammo);
+		
 		return hash.ToHashCode(); 
 	}
 }
