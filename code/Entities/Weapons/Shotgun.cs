@@ -10,6 +10,7 @@ public partial class Shotgun : Gun
 	public override float SecondaryAttackDelay => 1;
 	public override float PrimaryReloadDelay => 0.5f;
 	public override int MaxPrimaryAmmo => 10;
+	
 	public override bool SequentialReloading => true;
 
 	public override AmmoType PrimaryAmmoType => AmmoType.Buckshot;
@@ -34,10 +35,11 @@ public partial class Shotgun : Gun
 		base.ReloadPrimary();
 		ViewModelEntity?.SetAnimParameter( "reload", true );
 	}
-	
+
 	public override void SimulateAnimator( CitizenAnimationHelper anim )
 	{
 		base.SimulateAnimator( anim );
 		anim.HoldType = CitizenAnimationHelper.HoldTypes.Shotgun;
+		anim.AimBodyWeight = 1.0f;
 	}
 }

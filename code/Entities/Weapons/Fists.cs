@@ -55,7 +55,7 @@ public partial class Fists : Weapon
 		if ( string.IsNullOrEmpty( ViewModel.ResourcePath ) )
 			return;
 
-		ViewModelEntity = new BaseViewModel()
+		ViewModelEntity = new ViewModel()
 		{
 			Position = Position,
 			Owner = Owner,

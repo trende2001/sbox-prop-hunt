@@ -10,13 +10,6 @@ public class Pistol : Gun
 	public override int MaxPrimaryAmmo => 17;
 	public override AmmoType PrimaryAmmoType => AmmoType.Pistol;
 
-	public override void OnActive()
-	{
-		base.OnActive();
-		
-		ViewModelEntity?.SetAnimParameter( "b_deploy", true );
-	}
-
 	public override void PrimaryAttack()
 	{
 		PrimaryAmmo -= 1;

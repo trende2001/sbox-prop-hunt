@@ -18,7 +18,6 @@ public class MP5 : Gun
 	
 
 	public override bool Automatic { get; } = true;
-	
 
 	public override void PrimaryAttack()
 	{
