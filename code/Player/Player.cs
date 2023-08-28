@@ -8,12 +8,12 @@ using System.Reflection.Metadata;
 
 namespace MyGame;
 
-partial class Player : AnimatedEntity
+public partial class Player : AnimatedEntity
 {
-	private TimeSince TimeSinceManualTaunt { get; set; }
+	public TimeSince TimeSinceManualTaunt { get; set; }
 	
 	[Net]
-	private TimeSince TimeSinceLastGlobalTaunt { get; set; }
+	public TimeSince TimeSinceLastGlobalTaunt { get; set; }
 	
 	private BaseTeam team { get; set; } = null;
 	public BaseTeam Team

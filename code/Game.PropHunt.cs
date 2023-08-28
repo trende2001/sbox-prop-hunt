@@ -78,7 +78,7 @@ public partial class PropHuntGame : GameManager {
 		"ph_forcetaunt_interval",
 		Help = "The force taunt interval in seconds."
 	)]
-	public static int ForceTauntTime { get; set; } = 60;
+	public static int ForceTauntTime { get; set; } = 90;
 	
 	public List<long> RTVs { get; set; } = new();
 	public string NextMap { get; set; } = null;

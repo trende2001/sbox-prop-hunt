@@ -13,12 +13,17 @@
 		gap:16px;
 	} 
 	.seg {
-		font-size: 85px;
-		background-color: transparent;
+		font-size: 79px;
+    	background-color: rgba(0, 0, 0, 0.3);
+    	border-radius: 7px;
+    	padding-right: 30px;
 		color: white;
 		font-weight: 600;
-		//text-stroke: 3px black;
 		font-family: Nexa-Heavy;
+	}
+	.image {
+		width: 47px;
+		height: 47px;
 	}
 </style>
 
@@ -26,7 +31,7 @@
 	@if (Game.LocalPawn.LifeState == LifeState.Alive)
 	{
 		<div class="seg">
-			<img src="ui/icon/health-icon.png" style="width: 60px; height: 60px; margin: 33px"/>
+			<img class="image" src="ui/icon/health-icon.png" style="margin: 36px"/>
 			@Math.Round(Game.LocalPawn.Health)
 		</div>
 	}

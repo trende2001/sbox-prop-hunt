@@ -20,7 +20,7 @@
 		.timer {
 			bottom: -20px; 
     		flex-direction:column; 
-    		//border-radius: 12px;
+    		border-radius: 12px;
     		border-top-left-radius: 0px;
     		border-top-right-radius: 0px;
     
@@ -34,17 +34,41 @@
 		.time {
     		justify-content: center;
     		align-items: center;
+    		padding-top: 2px;
+    		background-color: rgba(32,32,32,0.4);
+    		
+    		text-shadow: 1px 1px 2px black;
+    		font-size: 35px;
     	}
+    	
+    	.enlarged-time {
+    	    justify-content: center;
+           	align-items: center;
+    		padding-left: 10px;
+    		text-shadow: 1px 1px 2px black;
+    	}
+    	
     	.segtop {
     		justify-content: center;
     		background-color: rgba(32,32,32,0.7);
     		border-radius: 10px;
+    		border-bottom-left-radius: 0px;
+    		border-bottom-right-radius: 0px;
     		min-width: 310px;
     		font-size: 24px;
     		color: white;
     		padding: 4px; 
     		flex-grow: 1;
     		text-stroke: 4px black;
+    	}
+    	.segbottom {
+    		justify-content: center;
+            min-width: 310px;
+            font-size: 24px;
+            color: white;
+            padding: 8px; 
+            flex-grow: 0;
+            text-stroke: 4px black;
     	}
 </style>
 
@@ -83,6 +107,19 @@
 			<div class="time">
 				@Format(TimeSpan.FromSeconds(game.RoundLength - game.TimeSinceRoundStateChanged.Relative.CeilToInt()))
 			</div>
+			
+			@if (Game.LocalPawn is not Player ply)
+				return;
+			
+			@if (PropHuntGame.ForceTaunt && PropHuntGame.Current.RoundState >= RoundState.Started)
+			{
+				<div class="segbottom">
+					Force Taunt imminent in
+					<div class="enlarged-time">
+						@Format(TimeSpan.FromSeconds(PropHuntGame.ForceTauntTime - ply.TimeSinceLastGlobalTaunt.Relative.CeilToInt()))
+					</div>
+				</div>
+			}
 		}
 		}
 	</div>
