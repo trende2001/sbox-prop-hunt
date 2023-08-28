@@ -10,7 +10,10 @@ namespace MyGame;
 
 partial class Player : AnimatedEntity
 {
-	private TimeSince NextTauntTime { get; set; }
+	private TimeSince TimeSinceManualTaunt { get; set; }
+	
+	[Net]
+	private TimeSince TimeSinceLastGlobalTaunt { get; set; }
 	
 	private BaseTeam team { get; set; } = null;
 	public BaseTeam Team
@@ -104,6 +107,13 @@ partial class Player : AnimatedEntity
 			if ( PropHuntGame.Current.RoundState < RoundState.Preparing && !IsSpectator && TeamName == "Spectator" )
 			{
 				Teams.Get<Spectator>().RemovePlayer( this );
+			}
+
+			if ( Team is Props && PropHuntGame.Current.RoundState >= RoundState.Started && PropHuntGame.ForceTaunt && TimeSinceLastGlobalTaunt >= PropHuntGame.ForceTauntTime )
+			{
+				// Global taunts reset manual taunt timer too
+				Taunt();
+				TimeSinceLastGlobalTaunt = 0f;
 			}
 		}
 	}
@@ -349,6 +359,25 @@ partial class Player : AnimatedEntity
 		}
 	}
 
+	public void Taunt()
+	{
+		switch ( TeamName )
+		{
+			case "Props":
+				var sound = PlaySound( "random_taunts_props" );
+				sound.SetVolume( 1.9f );
+				break;
+			case "Seekers":
+				var sound2 = PlaySound( "random_taunts_seekers" );
+				sound2.SetVolume( 1.9f );
+				break;
+			case "Spectator":
+				break;
+		}
+
+		TimeSinceManualTaunt = 0f;
+	}
+
 	/// <summary>
 	/// Called every tick, clientside and serverside.
 	/// </summary>
@@ -416,23 +445,9 @@ partial class Player : AnimatedEntity
 					
 		if ( Input.Pressed( "Flashlight" ) && Game.IsServer )
 		{
-			if ( NextTauntTime >= 40 )
+			if ( TimeSinceManualTaunt >= 20 )
 			{
-				switch ( TeamName )
-				{
-					case "Props":
-						var sound = PlaySound( "random_taunts_props" );
-						sound.SetVolume( 1.9f );
-						break;
-					case "Seekers":
-						var sound2 = PlaySound( "random_taunts_seekers" );
-						sound2.SetVolume( 1.9f );
-						break;
-					case "Spectator":
-						break;
-				}
-
-				NextTauntTime = 0f;
+				Taunt();
 			}
 		}
 

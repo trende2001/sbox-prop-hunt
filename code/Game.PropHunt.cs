@@ -66,7 +66,19 @@ public partial class PropHuntGame : GameManager {
 		Help = "Enable devcam for developer purposes."
 	)] 
 	public static bool EnableDevCam { get; set; } = false;
-	
+
+
+	[ConVar.Replicated(
+		"ph_enableforcetaunt",
+		Help = "Enables force taunts for props every x seconds."
+	)]
+	public static bool ForceTaunt { get; set; } = true;
+
+	[ConVar.Replicated(
+		"ph_forcetaunt_interval",
+		Help = "The force taunt interval in seconds."
+	)]
+	public static int ForceTauntTime { get; set; } = 60;
 	
 	public List<long> RTVs { get; set; } = new();
 	public string NextMap { get; set; } = null;

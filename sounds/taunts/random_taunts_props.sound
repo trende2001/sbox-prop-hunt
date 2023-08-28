@@ -1,8 +1,8 @@
 {
   "UI": false,
-  "Volume": "1.00,1.00,0",
+  "Volume": "0.71,0.71,0",
   "Pitch": "1.00,1.00,0",
-  "Decibels": 100,
+  "Decibels": 90,
   "SelectionMode": "RandomExclusive",
   "Sounds": [
     "sounds/taunts/perfect-fart.vsnd",
@@ -14,6 +14,6 @@
     "sounds/taunts/laugh2.vsnd",
     "sounds/taunts/whatsup.vsnd"
   ],
-  "MaximumDistance": 2301.2522,
-  "MinimumDistance": 115.062614
+  "MaximumDistance": 1870.0942,
+  "MinimumDistance": 93.504715
 }
