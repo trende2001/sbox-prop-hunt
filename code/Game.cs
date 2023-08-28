@@ -33,6 +33,8 @@ public partial class PropHuntGame : GameManager
 	/// </summary>
 	public override void ClientJoined( IClient client )
 	{
+		Event.Run( "Player.Connect", client, this );
+
 		base.ClientJoined( client );
 
 		// Create a player for this client to play with
@@ -52,23 +54,18 @@ public partial class PropHuntGame : GameManager
 
 	public override void ClientDisconnect( IClient cl, NetworkDisconnectionReason reason )
 	{
-		base.ClientDisconnect( cl, reason );
+		Event.Run( "Player.Disconnect", cl, reason );
+		if ( cl.Pawn is Player ply )
+		{
+			ply.Team?.RemovePlayer( ply );
+		}
 		
+		base.ClientDisconnect( cl, reason );
+
 		if ( reason != NetworkDisconnectionReason.SERVER_SHUTDOWN && reason != NetworkDisconnectionReason.Kicked )
 			Chat.AddChatEntry( To.Everyone, "", $"{cl.Name} has left the game", isInfo: true);
 	}
-	
-	public override void OnKilled( IClient client, Entity pawn )
-	{
-		base.OnKilled( client, pawn );
-	}
-	
-	[ClientRpc]
-	public override void OnKilledMessage( long leftid, string left, long rightid, string right, string method )
-	{
-		Sandbox.UI.KillFeed.Current?.AddEntry( leftid, left, rightid, right, method );
-	}
-	
+
 	public override void DoPlayerDevCam( IClient client )
 	{
 		Game.AssertServer();
